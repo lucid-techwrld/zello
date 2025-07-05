@@ -1,6 +1,6 @@
-import { BellDot, User } from "lucide-react";
+import { MenuIcon } from "lucide-react";
 
-const Header = () => {
+const Header = ({ handleMenu }: { handleMenu: () => void }) => {
   const date: Date = new Date();
   const now: number = date.getHours();
 
@@ -17,17 +17,16 @@ const Header = () => {
   };
 
   return (
-    <div className="w-full h-16 px-4  flex justify-between items-center fixed top-0 z-50 bg-white">
+    <div className="w-full h-16 px-4  flex justify-between items-center fixed top-0 z-40 bg-white">
       <div>
         <h1 className="font-bold">Good {greeting()}</h1>
         <p>User</p>
       </div>
-      <div className="flex gap-5 text-blue-500">
-        <div>
-          <BellDot />
-        </div>
-        <User />
-      </div>
+
+      <MenuIcon
+        className="text-blue-500 w-7 h-7"
+        onClick={() => handleMenu()}
+      />
     </div>
   );
 };

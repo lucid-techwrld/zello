@@ -1,5 +1,4 @@
 import { BedIcon, ToiletIcon } from "lucide-react";
-import React from "react";
 
 type RecommendType = {
   image: string;

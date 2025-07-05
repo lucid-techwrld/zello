@@ -1,10 +1,5 @@
-import {
-  FilterIcon,
-  SearchCheck,
-  SearchIcon,
-  SlidersHorizontal,
-} from "lucide-react";
-import { useEffect, useState } from "react";
+import { SearchIcon, SlidersHorizontal } from "lucide-react";
+import { useState } from "react";
 
 const Search = () => {
   const [selectedItems, setSelectedItems] = useState<string[]>(["House"]);
