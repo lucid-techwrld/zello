@@ -1,4 +1,5 @@
 import { MapPin } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 type NearYouType = {
   img: string;
@@ -8,8 +9,12 @@ type NearYouType = {
 };
 
 const NearYouCard = ({ img, name, address, km }: NearYouType) => {
+  const navigate = useNavigate();
   return (
-    <div className="relative w-64 min-w-64 h-80 overflow-hidden rounded-2xl ">
+    <div
+      className="relative w-64 min-w-64 h-80 overflow-hidden rounded-2xl "
+      onClick={() => navigate(`/view/${1}`)}
+    >
       <div className="absolute inset-0 w-full h-full bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
       <img src={img} alt="name" className="w-full h-full object-cover" />
 

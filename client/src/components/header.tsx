@@ -19,8 +19,8 @@ const Header = ({ handleMenu }: { handleMenu: () => void }) => {
   return (
     <div className="w-full h-16 px-4  flex justify-between items-center fixed top-0 z-40 bg-white">
       <div>
-        <h1 className="font-bold">Good {greeting()}</h1>
-        <p>User</p>
+        <h1 className="font-bold text-2xl">Good</h1>
+        <p className="text-gray-400">{greeting()}</p>
       </div>
 
       <MenuIcon

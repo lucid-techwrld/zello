@@ -18,7 +18,7 @@ interface NavBarProps {
 }
 
 const NavBar: React.FC<NavBarProps> = ({ isMenuOpen, handleMenu }) => {
-  const isLoggedIn = true;
+  const isLoggedIn = false;
   return (
     <div
       className={`fixed w-full h-full  gradient z-50 top-0 ${

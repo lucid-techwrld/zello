@@ -1,6 +1,9 @@
+import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Signin2 = () => {
+  const navigate = useNavigate();
   const [selected, setSelected] = useState<string>("🏘Rent");
 
   const select: string[] = ["🏘Rent", "🏡Lease"];
@@ -15,9 +18,12 @@ const Signin2 = () => {
   return (
     <div className="w-full h-full">
       <form className="h-full w-full p-4 space-y-4">
-        <h1 className="text-center font-bold text-2xl text-blue-500">
-          Personal Information
-        </h1>
+        <div className="w-full flex justify-center items-center relative">
+          <ArrowLeft className="absolute left-0" onClick={() => navigate(-1)} />
+          <h1 className="text-center font-bold text-xl text-blue-500">
+            Personal Information
+          </h1>
+        </div>
         <p className="font-bold text-xl">What are you here for?</p>
         <div className="flex justify-center items-center gap-3 w-full h-20 px-10">
           {select.map((word, index) => (

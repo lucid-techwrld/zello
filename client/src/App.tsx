@@ -6,6 +6,9 @@ import Login from "./pages/Login";
 import SignIn from "./pages/SignIn";
 import Signin2 from "./pages/Signin-two";
 import Profile from "./pages/Profile";
+import NearyBy from "./pages/NearyBy";
+import ViewProduct from "./pages/ViewProduct";
+import SearchResult from "./pages/SearchResult";
 
 function App() {
   return (
@@ -14,11 +17,13 @@ function App() {
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/nearby" element={<div>Nearby</div>} />
+          <Route path="/nearby" element={<NearyBy />} />
           <Route path="/notifications" element={<div>Notifications</div>} />
           <Route path="/messages" element={<div>Messages</div>} />
           <Route path="/bookmarks" element={<div>Bookmarks</div>} />
+          <Route path="/search/:search" element={<SearchResult />} />
         </Route>
+        <Route path="/view/:id" element={<ViewProduct />} />
         <Route path="/auth/login" element={<Login />} />
         <Route path="/auth/join" element={<SignIn />} />
         <Route path="/auth/join/info" element={<Signin2 />} />

@@ -1,7 +1,9 @@
 import { SearchIcon, SlidersHorizontal } from "lucide-react";
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Search = () => {
+  const navigate = useNavigate();
   const [selectedItems, setSelectedItems] = useState<string[]>(["House"]);
 
   const handleItemFilter = (item: string): void => {
@@ -23,12 +25,24 @@ const Search = () => {
     "Flat",
   ];
 
+  const handleSearchSubmit = (e: FormEvent<HTMLFormElement>): void => {
+    e.preventDefault();
+
+    const keyword = e.target[0].value;
+    navigate(`/search/${keyword}`);
+  };
+
   return (
     <div className="p-3 w-full h-auto flex flex-col gap-2">
       <div className="w-full flex gap-2 items-center">
-        <form className="w-[85%] relative">
+        <form
+          className="w-[85%] relative"
+          onSubmit={(e) => handleSearchSubmit(e)}
+        >
           <input
             type="text"
+            name="search"
+            id="search"
             className="bg-gray-200 w-full h-10 rounded-md pl-10  border-none outline-none placeholder:text-sm"
             placeholder="Search address or near you"
           />
