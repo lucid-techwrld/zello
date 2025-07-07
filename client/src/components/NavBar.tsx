@@ -1,5 +1,5 @@
 import {
-  BellDot,
+  Bell,
   Home,
   User,
   MessageCircle,
@@ -30,13 +30,13 @@ const NavBar: React.FC<NavBarProps> = ({ isMenuOpen, handleMenu }) => {
           className="w-8 h-8 text-white right-5 top-5 absolute"
           onClick={handleMenu}
         />
-        <ul className="w-full h-full flex flex-col justify-center space-y-6 text-xl text-white">
+        <ul className="w-full h-full flex flex-col justify-center space-y-7 text-md text-white">
           <NavLink
             to="/"
             className={({ isActive }) =>
               `flex gap-3 items-center transition-all ease-in-out duration-300 ${
                 isActive
-                  ? "font-bold text-blue-500 bg-white p-5 rounded-r-full w-1/2"
+                  ? "font-bold text-blue-500 bg-white p-3 rounded-r-full w-1/2"
                   : "p-5"
               } `
             }
@@ -50,7 +50,7 @@ const NavBar: React.FC<NavBarProps> = ({ isMenuOpen, handleMenu }) => {
             className={({ isActive }) =>
               `flex gap-3 items-center transition-all ease-in-out duration-300 ${
                 isActive
-                  ? "font-bold text-blue-500 bg-white p-5 rounded-r-full w-1/2"
+                  ? "font-bold text-blue-500 bg-white p-3 rounded-r-full w-1/2"
                   : "px-5"
               } `
             }
@@ -64,7 +64,7 @@ const NavBar: React.FC<NavBarProps> = ({ isMenuOpen, handleMenu }) => {
             className={({ isActive }) =>
               `flex gap-3 items-center transition-all ease-in-out duration-300 ${
                 isActive
-                  ? "font-bold text-blue-500 bg-white p-5 rounded-r-full w-1/2"
+                  ? "font-bold text-blue-500 bg-white p-3 rounded-r-full w-1/2"
                   : "px-5"
               } `
             }
@@ -78,13 +78,13 @@ const NavBar: React.FC<NavBarProps> = ({ isMenuOpen, handleMenu }) => {
             className={({ isActive }) =>
               `flex gap-3 items-center transition-all ease-in-out duration-300 ${
                 isActive
-                  ? "font-bold text-blue-500 bg-white p-5 rounded-r-full w-1/2"
+                  ? "font-bold text-blue-500 bg-white p-3 rounded-r-full w-1/2"
                   : "px-5"
               } `
             }
           >
             {" "}
-            <BellDot /> <span>Notifications</span>
+            <Bell /> <span>Notifications</span>
           </NavLink>
 
           <NavLink
@@ -92,7 +92,7 @@ const NavBar: React.FC<NavBarProps> = ({ isMenuOpen, handleMenu }) => {
             className={({ isActive }) =>
               `flex gap-3 items-center transition-all ease-in-out duration-300 ${
                 isActive
-                  ? "font-bold text-blue-500 bg-white p-5 rounded-r-full w-1/2"
+                  ? "font-bold text-blue-500 bg-white p-3 rounded-r-full w-1/2"
                   : "px-5"
               } `
             }
@@ -106,7 +106,7 @@ const NavBar: React.FC<NavBarProps> = ({ isMenuOpen, handleMenu }) => {
             className={({ isActive }) =>
               `flex gap-3 items-center transition-all ease-in-out duration-300 ${
                 isActive
-                  ? "font-bold text-blue-500 bg-white p-5 rounded-r-full w-1/2"
+                  ? "font-bold text-blue-500 bg-white p-3 rounded-r-full w-1/2"
                   : "px-5"
               } `
             }
@@ -120,7 +120,7 @@ const NavBar: React.FC<NavBarProps> = ({ isMenuOpen, handleMenu }) => {
             className={({ isActive }) =>
               `flex gap-3 items-center transition-all ease-in-out duration-300 ${
                 isActive
-                  ? "font-bold text-blue-500 bg-white p-5 rounded-r-full w-1/2"
+                  ? "font-bold text-blue-500 bg-white p-3 rounded-r-full w-1/2"
                   : "px-5"
               } `
             }

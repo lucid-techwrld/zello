@@ -9,6 +9,7 @@ import Profile from "./pages/Profile";
 import NearyBy from "./pages/NearyBy";
 import ViewProduct from "./pages/ViewProduct";
 import SearchResult from "./pages/SearchResult";
+import Notifications from "./pages/Notifications";
 
 function App() {
   return (
@@ -18,11 +19,12 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/nearby" element={<NearyBy />} />
-          <Route path="/notifications" element={<div>Notifications</div>} />
+
           <Route path="/messages" element={<div>Messages</div>} />
           <Route path="/bookmarks" element={<div>Bookmarks</div>} />
           <Route path="/search/:search" element={<SearchResult />} />
         </Route>
+        <Route path="/notifications" element={<Notifications />} />
         <Route path="/view/:id" element={<ViewProduct />} />
         <Route path="/auth/login" element={<Login />} />
         <Route path="/auth/join" element={<SignIn />} />

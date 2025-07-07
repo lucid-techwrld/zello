@@ -18,7 +18,6 @@ const NearyBy = () => {
             bedrooms={5}
             toilets={6}
             location="Lekki, Lagos"
-            onClick={() => console.log("Card clicked")}
           />
           <RecommendeCard
             image={image2}

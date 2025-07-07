@@ -27,8 +27,8 @@ const Search = () => {
 
   const handleSearchSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
-
-    const keyword = e.target[0].value;
+    const formData = new FormData(e.currentTarget);
+    const keyword = formData.get("search") as string;
     navigate(`/search/${keyword}`);
   };
 
