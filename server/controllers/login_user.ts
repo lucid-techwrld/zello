@@ -26,7 +26,19 @@ const loginUser = async (req: CustomLoginRequest, res: Response) => {
     if (!correctPassword) {
       return res.status(400).json({ error: "Email or password is incorrect" });
     }
-    const token = generateToken(user?.id);
+
+    const userInfo = await db("users")
+      .join("user_info", "users.id", "user_info.user_id")
+      .select("users.id", "users.email", "user_info.role")
+      .where("users.id", user.id)
+      .first();
+
+    if (!userInfo) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+    const token = generateToken(userInfo);
     sendCookie(req, res, token);
     return res.status(200).json({
       success: true,
@@ -38,6 +50,7 @@ const loginUser = async (req: CustomLoginRequest, res: Response) => {
       },
     });
   } catch (error) {
+    console.error("Login error:", error);
     res.status(500).json({ error: "Internal Server Error" });
     return;
   }

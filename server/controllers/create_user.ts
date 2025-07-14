@@ -49,7 +49,7 @@ type addressParams = {
   country: string;
 };
 
-interface CustomUserDeatilsRequest extends Request {
+interface CustomUserDetailsRequest extends Request {
   body: {
     role: string;
     firstName: string;
@@ -60,50 +60,83 @@ interface CustomUserDeatilsRequest extends Request {
   };
 }
 
-const addUserDetails = async (req: CustomUserDeatilsRequest, res: Response) => {
+const addUserDetails = async (req: CustomUserDetailsRequest, res: Response) => {
   const { role, firstName, lastName, address, dob, userId } = req.body;
+
   if (!role || !firstName || !lastName || !address || !dob || !userId) {
     return res
       .status(400)
-      .json({ success: false, message: "All field are required" });
+      .json({ success: false, message: "All fields are required" });
   }
 
   try {
-    const userExist = await db("users").where("userId").first();
-    if (!userExist) {
-      return res.status(409).json({
+    const userExists = await db("users").where({ id: userId }).first();
+
+    if (!userExists) {
+      return res.status(404).json({
         success: false,
-        message: "Create and account and try again later",
+        message: "User not found. Please register first.",
       });
     }
+
+    const existingInfo = await db("user_info")
+      .where({ user_id: userId })
+      .first();
+    const existingAddress = await db("user_address")
+      .where({ user_id: userId })
+      .first();
+
+    if (existingInfo || existingAddress) {
+      return res.status(409).json({
+        success: false,
+        message: "User details already exist. Update instead.",
+      });
+    }
+
+    const parsedDob = new Date(dob);
+    if (isNaN(parsedDob.getTime())) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid DOB format" });
+    }
+
     const userInfo = {
       user_id: userId,
       first_name: firstName,
       last_name: lastName,
-      dob,
+      dob: parsedDob,
       role,
     };
 
-    const { street, city, state, country } = address;
-    const addressInfo = {
-      street,
-      city,
-      state,
-      country,
+    const userAddress = {
+      user_id: userId,
+      street: address.street,
+      city: address.city,
+      state: address.state,
+      country: address.country,
     };
 
-    const [userAddress] = await db("user_address")
-      .insert(addressInfo)
+    const [insertedInfo] = await db("user_info")
+      .insert(userInfo)
       .returning("*");
-    const [userDetails] = await db("user_info").insert(userInfo).returning("*");
+    const [insertedAddress] = await db("user_address")
+      .insert(userAddress)
+      .returning("*");
 
-    res.status(401).json({
+    return res.status(201).json({
       success: true,
-      message: "User details addedd successfully!",
-      userDetails,
-      userAddress,
+      message: "User details added successfully!",
+      user: {
+        ...insertedInfo,
+        address: insertedAddress,
+      },
     });
-  } catch (error) {}
+  } catch (error) {
+    console.error("Error adding user details:", error);
+    return res
+      .status(500)
+      .json({ success: false, error: "Internal Server Error" });
+  }
 };
 
 export { createUser, addUserDetails };
