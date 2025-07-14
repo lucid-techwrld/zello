@@ -42,38 +42,6 @@ const createUser = async (req: CustomUserRequest, res: Response) => {
   }
 };
 
-interface CustomLoginReq extends Request {
-  body: {
-    email: string;
-    password: string;
-  };
-}
-
-const loginUser = async (req: CustomLoginReq, res: Response) => {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    res
-      .status(400)
-      .json({ success: false, message: "Email and password are required" });
-  }
-  try {
-    const [user] = await db("user").where({ email }).first();
-    if (!user) {
-      return res
-        .status(401)
-        .json({ success: false, message: "User does not exist" });
-    }
-
-    const correctPassword = bcrypt.compare(password, user.password);
-    if (!correctPassword) {
-      return res.json({
-        success: false,
-        message: "Email or password is incorrect",
-      });
-    }
-  } catch (error) {}
-};
-
 type addressParams = {
   street: string;
   city: string;
@@ -91,6 +59,7 @@ interface CustomUserDeatilsRequest extends Request {
     userId: string;
   };
 }
+
 const addUserDetails = async (req: CustomUserDeatilsRequest, res: Response) => {
   const { role, firstName, lastName, address, dob, userId } = req.body;
   if (!role || !firstName || !lastName || !address || !dob || !userId) {

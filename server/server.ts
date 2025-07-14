@@ -4,13 +4,16 @@ import express from "express";
 import path from "path";
 import authRoute from "./routes/auth_route";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "../client/dist")));
-app.use("/api/auth", authRoute);
+
+app.use("/auth", authRoute);
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../client/dist", "index.html"));
