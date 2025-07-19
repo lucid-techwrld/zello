@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import generateOTP from "../helpers/generakeOTP";
 import sendOTP from "../helpers/sendOTP";
 import { Request, Response } from "express";
+import verifyOTPCode from "../helpers/verifyOTP";
 
 interface CustomOTPRequest extends Request {
   body: {
@@ -30,37 +31,14 @@ const verifyOTP = async (req: CustomOTPRequest, res: Response) => {
       });
     }
 
-    type OTPRemaining = {
-      remaining_time: number;
-      otp_code: string;
-    };
-
-    const otpRecord = await db("otps")
-      .select(
-        db.raw("EXTRACT(EPOCH FROM (expired_at - NOW())) AS remaining_time"),
-        "otp_code"
-      )
-      .where({
-        email,
-        isUsed: false,
-      })
-      .first<OTPRemaining>();
-
-    if (!otpRecord) {
-      return res.status(404).json({ error: "OTP not found or expired" });
-    }
-
-    const isMatch = await bcrypt.compare(otpCode, otpRecord.otp_code);
-    if (!isMatch) {
-      return res.status(400).json({ error: "Invalid OTP code" });
-    }
-
-    if (otpRecord.remaining_time <= 0) {
-      return res.status(400).json({ error: "OTP has expired" });
-    }
+    verifyOTPCode(req, res, email, otpCode);
 
     await db("users").where({ email }).update({
       isVerified: true,
+    });
+
+    await db("otps").where({ email }).update({
+      isUsed: true,
     });
 
     res.status(200).json({
