@@ -44,6 +44,7 @@ const verifyOTP = async (req: CustomOTPRequest, res: Response) => {
     res.status(200).json({
       success: true,
       message: "OTP verified successfully",
+      id: user.id,
     });
   } catch (error) {
     console.error("Error verifying OTP:", error);

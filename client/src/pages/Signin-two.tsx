@@ -1,23 +1,95 @@
-import { ArrowLeft } from "lucide-react";
+import axios from "axios";
+import { ArrowLeft, Loader } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 const Signin2 = () => {
   const navigate = useNavigate();
-  const [selected, setSelected] = useState<string>("🏘Rent");
+  const { id } = useParams<{ id: string }>();
+  if (!id) {
+    navigate("/auth/join");
+    return null;
+  }
+  const [role, setRoleSlected] = useState<string>("Rent");
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const select: string[] = ["🏘Rent", "🏡Lease"];
+  const select: string[] = ["Rent", "Lease"];
 
   const handleSelectClick = (keyword: string) => {
-    const isMatch = selected === keyword;
+    const isMatch = role === keyword;
     if (!isMatch) {
-      setSelected(keyword);
+      setRoleSlected(keyword);
     } else return;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    const rawData = Object.fromEntries(formData.entries());
+
+    const { street, city, state, country, ...rest } = rawData;
+    const payload = {
+      ...rest,
+      role,
+      userId: id,
+      address: {
+        street,
+        city,
+        state,
+        country,
+      },
+    };
+
+    try {
+      setLoading(true);
+      // console.log("submitting data:", payload);
+      const res = await axios.post(
+        `http://localhost:5000/auth/add-details`,
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (res.status !== 201) {
+        throw new Error("Failed to add details");
+      }
+      console.log("User details added successfully:", res.data);
+      navigate("/");
+    } catch (error) {
+      let message = "Something went wrong. Please try again.";
+
+      if (error instanceof Error) {
+        message = error.message;
+      }
+
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "response" in error &&
+        typeof (error as any).response === "object"
+      ) {
+        const err = error as any;
+        message =
+          err.response?.data?.message || err.response?.data?.error || message;
+      }
+
+      console.log("Login Error:", message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="w-full h-full">
-      <form className="h-full w-full p-4 space-y-4">
+      <form
+        onSubmit={(e) => handleSubmit(e)}
+        className="h-full w-full p-4 space-y-4"
+      >
         <div className="w-full flex justify-center items-center relative">
           <ArrowLeft className="absolute left-0" onClick={() => navigate(-1)} />
           <h1 className="text-center font-bold text-xl text-blue-500">
@@ -29,21 +101,21 @@ const Signin2 = () => {
           {select.map((word, index) => (
             <div
               className={`w-1/2 h-full ${
-                selected === word
+                role === word
                   ? "gradient text-white"
                   : "bg-gray-200 text-gray-400"
               }  rounded-md flex justify-center items-center text-xl font-bold `}
               key={index}
               onClick={() => handleSelectClick(word)}
             >
-              {word}
+              🏘{word}
             </div>
           ))}
         </div>
 
         <input
           type="text"
-          name="first_name"
+          name="firstName"
           id="name1"
           required
           placeholder="First Name"
@@ -51,7 +123,7 @@ const Signin2 = () => {
         />
         <input
           type="text"
-          name="last_name"
+          name="lastName"
           id="name2"
           required
           placeholder="Last Name"
@@ -100,8 +172,12 @@ const Signin2 = () => {
         />
 
         <div className="w-full h-24 flex justify-center items-center px-20">
-          <button className="gradient w-full p-4 font-bold text-white">
-            Continue
+          <button className="gradient-extra rounded-full w-full p-4 font-bold text-white">
+            {loading ? (
+              <Loader className="text-white w-6 h-6 animate-spin" />
+            ) : (
+              "Continue"
+            )}
           </button>
         </div>
       </form>

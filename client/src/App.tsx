@@ -10,6 +10,8 @@ import NearyBy from "./pages/NearyBy";
 import ViewProduct from "./pages/ViewProduct";
 import SearchResult from "./pages/SearchResult";
 import Notifications from "./pages/Notifications";
+import OtpPage from "./pages/OtpPage";
+import RequestOTP from "./pages/RequestOTP";
 
 function App() {
   return (
@@ -28,7 +30,9 @@ function App() {
         <Route path="/view/:id" element={<ViewProduct />} />
         <Route path="/auth/login" element={<Login />} />
         <Route path="/auth/join" element={<SignIn />} />
-        <Route path="/auth/join/info" element={<Signin2 />} />
+        <Route path="/auth/join/info/:id" element={<Signin2 />} />
+        <Route path="/auth/otp/:email" element={<OtpPage />} />
+        <Route path="/auth/request-otp" element={<RequestOTP />} />
       </Routes>
     </div>
   );
