@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import db from "../database/database";
 import generateToken from "../helpers/generateToken";
+import generateOTP from "../helpers/generakeOTP";
+import sendOTP from "../helpers/sendOTP";
 import sendCookie from "../helpers/sendCookie";
 
 interface CustomLoginRequest extends Request {
@@ -25,6 +27,18 @@ const loginUser = async (req: CustomLoginRequest, res: Response) => {
     const correctPassword = await bcrypt.compare(password, user.password);
     if (!correctPassword) {
       return res.status(400).json({ error: "Email or password is incorrect" });
+    }
+
+    if (!user.isVerified) {
+      const generatedOTP = (await generateOTP(user.email)) as string;
+      await sendOTP(user.email, generatedOTP);
+
+      return res
+        .status(200)
+        .json({
+          success: true,
+          message: "OTP Verification has been sent to your email",
+        });
     }
 
     const userInfo = await db("users")

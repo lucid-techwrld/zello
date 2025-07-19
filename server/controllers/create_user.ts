@@ -1,5 +1,7 @@
 import db from "../database/database";
 import bcrypt from "bcryptjs";
+import generateOTP from "../helpers/generakeOTP";
+import sendOTP from "../helpers/sendOTP";
 import { Request, Response } from "express";
 
 interface CustomUserRequest extends Request {
@@ -31,10 +33,14 @@ const createUser = async (req: CustomUserRequest, res: Response) => {
     const [user] = await db("users")
       .insert(newUser)
       .returning(["id", "email", "avatar"]);
+
+    const generatedOTP = (await generateOTP(user.email)) as string;
+    await sendOTP(user.email, generatedOTP);
     res.status(201).json({
       id: user.id,
       email: user.email,
       avatar: user.avatar,
+      message: `OTP sent succesfully to ${user.email}. Check inbox`,
     });
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
