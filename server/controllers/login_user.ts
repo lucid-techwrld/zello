@@ -22,7 +22,7 @@ const loginUser = async (req: CustomLoginRequest, res: Response) => {
   try {
     const user = await db("users").where({ email }).first();
     if (!user) {
-      res.status(409).json({ message: "User does not exist" });
+      res.status(404).json({ message: "User does not exist" });
     }
     const correctPassword = await bcrypt.compare(password, user.password);
     if (!correctPassword) {
@@ -33,12 +33,10 @@ const loginUser = async (req: CustomLoginRequest, res: Response) => {
       const generatedOTP = (await generateOTP(user.email)) as string;
       await sendOTP(user.email, generatedOTP);
 
-      return res
-        .status(200)
-        .json({
-          success: true,
-          message: "OTP Verification has been sent to your email",
-        });
+      return res.status(200).json({
+        success: true,
+        message: "OTP Verification has been sent to your email",
+      });
     }
 
     const userInfo = await db("users")

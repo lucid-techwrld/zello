@@ -1,5 +1,5 @@
 import "./App.css";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import Layout from "./components/layout";
 import Home from "./pages/home";
 import Login from "./pages/Login";
@@ -12,27 +12,70 @@ import SearchResult from "./pages/SearchResult";
 import Notifications from "./pages/Notifications";
 import OtpPage from "./pages/OtpPage";
 import RequestOTP from "./pages/RequestOTP";
+import ForgottenPassword from "./pages/ForgottenPassword";
+import { useUser } from "./hooks/userContext";
+import { useEffect, useState } from "react";
+import LoadingScreen from "./pages/LoadingScree";
+import FAQ from "./pages/faq";
+import AboutUs from "./pages/about";
+import ViewProfile from "./pages/ViewProfile";
 
 function App() {
+  const { authenticated, setAuthenticated, fetchUserData } = useUser();
+  const [initialized, setInitialized] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const auth = await fetchUserData();
+        console.log(auth);
+        if (!auth) setAuthenticated(false);
+      } catch (err) {
+        console.error("Auth check failed:", err);
+        setAuthenticated(false);
+      } finally {
+        setInitialized(true);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  if (!initialized) return <LoadingScreen />;
+
   return (
-    <div className="min-h-screen w-full ">
+    <div className="min-h-screen w-full">
       <Routes>
         <Route element={<Layout />}>
-          <Route path="/" element={<Home />} />
+          <Route
+            path="/"
+            element={
+              authenticated ? <Home /> : <Navigate to="/auth/login" replace />
+            }
+          />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/profile/view" element={<ViewProfile />} />
           <Route path="/nearby" element={<NearyBy />} />
-
           <Route path="/messages" element={<div>Messages</div>} />
           <Route path="/bookmarks" element={<div>Bookmarks</div>} />
           <Route path="/search/:search" element={<SearchResult />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/about" element={<AboutUs />} />
         </Route>
+
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/view/:id" element={<ViewProduct />} />
+
+        {/* Auth routes */}
         <Route path="/auth/login" element={<Login />} />
         <Route path="/auth/join" element={<SignIn />} />
         <Route path="/auth/join/info/:id" element={<Signin2 />} />
         <Route path="/auth/otp/:email" element={<OtpPage />} />
         <Route path="/auth/request-otp" element={<RequestOTP />} />
+        <Route
+          path="/auth/forgotten-password/:email"
+          element={<ForgottenPassword />}
+        />
       </Routes>
     </div>
   );

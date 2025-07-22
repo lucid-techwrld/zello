@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 import { Loader } from "lucide-react";
+import extractAxiosErrorMessage from "../components/extractError";
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -13,16 +14,17 @@ const SignIn = () => {
   const hanldeSbumit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const email = (e.target as HTMLFormElement).email.value;
-    const password = (e.target as HTMLFormElement).psw.value;
+    const form = e.target as HTMLFormElement;
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
 
     setLoading(true);
     try {
       const res = await axios.post(
         "http://localhost:5000/auth/register",
         {
-          email,
-          password,
+          email: data.email as string,
+          password: data.psw as string,
         },
         {
           headers: {
@@ -36,27 +38,13 @@ const SignIn = () => {
         throw new Error("Failed to create user");
       }
       console.log("User created successfully:", res.data);
-      navigate("/auth/otp");
+      navigate("/auth/otp/res.data.email");
     } catch (error) {
-      let message = "Something went wrong. Please try again.";
-
-      if (error instanceof Error) {
-        message = error.message;
-      }
-
-      if (
-        typeof error === "object" &&
-        error !== null &&
-        "response" in error &&
-        typeof (error as any).response === "object"
-      ) {
-        const err = error as any;
-        message =
-          err.response?.data?.message || err.response?.data?.error || message;
-      }
+      const message = extractAxiosErrorMessage(error);
 
       console.log("Login Error:", message);
     } finally {
+      form.reset();
       setLoading(false);
     }
   };
@@ -98,7 +86,7 @@ const SignIn = () => {
         </div>
         <button
           type="submit"
-          className="w-full h-12 gradient font-bold text-white"
+          className="w-full h-12 gradient font-bold text-white flex justify-center items-center"
         >
           {loading ? (
             <Loader className="text-white w-7 h-7 animate-spin" />

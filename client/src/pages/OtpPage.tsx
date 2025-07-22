@@ -4,9 +4,10 @@ import { ArrowLeft, Loader } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { useState } from "react";
+import Success from "../components/Success";
+import extractAxiosErrorMessage from "../components/extractError";
 
 const OtpPage = () => {
-  const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const { email } = useParams<{ email: string }>();
   if (!email) {
@@ -14,10 +15,13 @@ const OtpPage = () => {
     return null;
   }
 
+  const [loading, setLoading] = useState<boolean>(false);
+  const [displayToast, setDisplay] = useState<boolean>(false);
+
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
-    const otpCode = (e.target as HTMLFormElement).otp.value;
-
+    const form = e.target as HTMLFormElement;
+    const otpCode = form.otp.value;
     try {
       setLoading(true);
       const res = await axios.post(
@@ -35,27 +39,19 @@ const OtpPage = () => {
         throw new Error("Failed to verify OTP");
       }
       console.log("OTP verified successfully:", res.data);
-      navigate("/auth/join/info/" + res.data.id);
+
+      setDisplay(true);
+
+      setTimeout(() => {
+        setDisplay(false);
+        navigate("/auth/join/info/" + res.data.id);
+      }, 3000);
     } catch (error) {
-      let message = "Something went wrong. Please try again.";
-
-      if (error instanceof Error) {
-        message = error.message;
-      }
-
-      if (
-        typeof error === "object" &&
-        error !== null &&
-        "response" in error &&
-        typeof (error as any).response === "object"
-      ) {
-        const err = error as any;
-        message =
-          err.response?.data?.message || err.response?.data?.error || message;
-      }
+      const message = extractAxiosErrorMessage(error);
 
       console.log("OTP Verification Error:", message);
     } finally {
+      form.reset();
       setLoading(false);
     }
   };
@@ -87,7 +83,7 @@ const OtpPage = () => {
         />
         <button
           type="submit"
-          className="w-full h-16 gradient-extra rounded-full font-bold text-white mt-8"
+          className="w-full h-16 gradient-extra rounded-full flex justify-center items-center font-bold text-white mt-8"
         >
           {loading ? (
             <Loader className="text-white w-6 h-6 animate-spin" />
@@ -96,6 +92,12 @@ const OtpPage = () => {
           )}
         </button>
       </form>
+      {displayToast && (
+        <Success
+          message="OTP Verified Succesfully"
+          subText="OTP Code has been verified successfully, you will be redirect shortly."
+        />
+      )}
     </div>
   );
 };

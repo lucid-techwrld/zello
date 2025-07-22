@@ -8,9 +8,11 @@ import {
   LogOut,
   LogIn,
   X,
+  PlusCircle,
 } from "lucide-react";
 
 import { NavLink } from "react-router-dom";
+import { useUser } from "../hooks/userContext";
 
 interface NavBarProps {
   isMenuOpen: boolean;
@@ -18,7 +20,7 @@ interface NavBarProps {
 }
 
 const NavBar: React.FC<NavBarProps> = ({ isMenuOpen, handleMenu }) => {
-  const isLoggedIn = false;
+  const { authenticated, user } = useUser();
   return (
     <div
       className={`fixed w-full h-full  gradient z-50 top-0 ${
@@ -44,6 +46,22 @@ const NavBar: React.FC<NavBarProps> = ({ isMenuOpen, handleMenu }) => {
             {" "}
             <Home /> <span>Home</span>
           </NavLink>
+
+          {user?.role == "lease" && (
+            <NavLink
+              to="/add"
+              className={({ isActive }) =>
+                `flex gap-3 items-center transition-all ease-in-out duration-300 ${
+                  isActive
+                    ? "font-bold text-blue-500 bg-white p-3 rounded-r-full w-1/2"
+                    : "px-5"
+                } `
+              }
+            >
+              {" "}
+              <PlusCircle /> <span>List Property</span>
+            </NavLink>
+          )}
 
           <NavLink
             to="/profile"
@@ -116,7 +134,7 @@ const NavBar: React.FC<NavBarProps> = ({ isMenuOpen, handleMenu }) => {
           </NavLink>
 
           <NavLink
-            to={isLoggedIn ? "/" : "/auth/login"}
+            to={authenticated ? "/auth/join" : "/auth/login"}
             className={({ isActive }) =>
               `flex gap-3 items-center transition-all ease-in-out duration-300 ${
                 isActive
@@ -126,7 +144,7 @@ const NavBar: React.FC<NavBarProps> = ({ isMenuOpen, handleMenu }) => {
             }
           >
             {" "}
-            {isLoggedIn ? (
+            {authenticated ? (
               <>
                 <LogOut /> <span>Sign Out</span>
               </>
