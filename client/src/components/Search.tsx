@@ -4,7 +4,10 @@ import { useNavigate } from "react-router-dom";
 
 const Search = () => {
   const navigate = useNavigate();
-  const [selectedItems, setSelectedItems] = useState<string[]>(["House"]);
+  const [selectedItems, setSelectedItems] = useState<string[]>([
+    "Single Room",
+    "Self-Contain / Mini Flat",
+  ]);
 
   const handleItemFilter = (item: string): void => {
     if (selectedItems.includes(item)) {
@@ -16,13 +19,26 @@ const Search = () => {
   };
 
   const filterList: string[] = [
-    "House",
-    "Apartment",
-    "Hotel",
-    "Villa",
-    "Mansion",
+    "Self-Contain / Mini Flat",
+    "Single Room",
+    "1 Bedroom Flat",
+    "2 Bedroom Flat",
+    "3 Bedroom Flat",
+    "Bungalow",
     "Duplex",
-    "Flat",
+    "Terrace House",
+    "Detached House",
+    "Shared Apartment",
+    "Penthouse",
+    "Mansion",
+    "Short Let",
+    "Serviced Apartment",
+    "Furnished Apartment",
+    "Face-me-I-face-you",
+    "Office Space",
+    "Shop / Store",
+    "Warehouse",
+    "Event Center / Hall",
   ];
 
   const handleSearchSubmit = (e: FormEvent<HTMLFormElement>): void => {
@@ -59,7 +75,7 @@ const Search = () => {
       <ul className="flex gap-4 overflow-scroll">
         {filterList.map((item, index) => (
           <li
-            className={`px-4 py-2 ${
+            className={`px-4 py-2 whitespace-nowrap ${
               selectedItems.includes(item)
                 ? "gradient text-white "
                 : "bg-gray-100 rounded-md text-gray-600"

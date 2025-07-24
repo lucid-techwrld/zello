@@ -64,6 +64,7 @@ export const UserProvider = ({ children }: UserProviderProps) => {
       }
 
       console.log("Login Message:", res.data);
+      await fetchUserData();
       setAuthenticated(true);
       return true;
     } catch (error) {

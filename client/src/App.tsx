@@ -19,16 +19,17 @@ import LoadingScreen from "./pages/LoadingScree";
 import FAQ from "./pages/faq";
 import AboutUs from "./pages/about";
 import ViewProfile from "./pages/ViewProfile";
+import ListProperty from "./pages/AddPropety";
+import ProtectedRoute from "./components/protectedRoute";
 
 function App() {
-  const { authenticated, setAuthenticated, fetchUserData } = useUser();
+  const { authenticated, setAuthenticated, fetchUserData, user } = useUser();
   const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
         const auth = await fetchUserData();
-        console.log(auth);
         if (!auth) setAuthenticated(false);
       } catch (err) {
         console.error("Auth check failed:", err);
@@ -50,10 +51,19 @@ function App() {
           <Route
             path="/"
             element={
-              authenticated ? <Home /> : <Navigate to="/auth/login" replace />
+              <ProtectedRoute isAuthenticated={authenticated}>
+                <Home />
+              </ProtectedRoute>
             }
           />
-          <Route path="/profile" element={<Profile />} />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute isAuthenticated={authenticated}>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/profile/view" element={<ViewProfile />} />
           <Route path="/nearby" element={<NearyBy />} />
           <Route path="/messages" element={<div>Messages</div>} />
@@ -61,6 +71,16 @@ function App() {
           <Route path="/search/:search" element={<SearchResult />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/about" element={<AboutUs />} />
+          <Route
+            path="/add"
+            element={
+              user?.role === "lease" ? (
+                <ListProperty />
+              ) : (
+                <Navigate to="/" replace />
+              )
+            }
+          />
         </Route>
 
         <Route path="/notifications" element={<Notifications />} />

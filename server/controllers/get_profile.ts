@@ -11,7 +11,9 @@ interface CustomRequest extends Request {
 const getProfile = async (req: CustomRequest, res: Response) => {
   const userId = req.user?.id;
   if (!userId) {
-    return res.status(400).json({ success: false, message: "User ID missing" });
+    return res
+      .status(400)
+      .json({ success: false, message: "Please login and try again" });
   }
 
   try {

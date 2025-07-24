@@ -4,6 +4,7 @@ import express from "express";
 import path from "path";
 import authRoute from "./routes/auth_route";
 import verifyRoute from "./routes/verification_routes";
+import propertyRoute from "./routes/property_route";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
@@ -24,6 +25,7 @@ app.use(express.static(path.join(__dirname, "../client/dist")));
 
 app.use("/auth", authRoute);
 app.use("/verify", verifyRoute);
+app.use("/property", propertyRoute);
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../client/dist", "index.html"));

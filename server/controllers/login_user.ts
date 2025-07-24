@@ -68,4 +68,19 @@ const loginUser = async (req: CustomLoginRequest, res: Response) => {
   }
 };
 
+const logOUt = async (req: Request, res: Response) => {
+  try {
+    res.clearCookie("userId", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+    });
+
+    return res.status(200).json({ message: "Logged out successfully" });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ error: "Something went wrong while logging out." });
+  }
+};
 export { loginUser };

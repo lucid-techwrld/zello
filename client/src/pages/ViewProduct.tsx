@@ -82,7 +82,7 @@ const ViewProduct = () => {
       </div>
 
       <div className="w-full h-16 flex justify-center items-center mt-4">
-        <button className="gradient w-[80%] h-12 rounded-full text-xl font-bold text-white">
+        <button className="gradient-extra w-[80%] h-12 rounded-full text-xl font-bold text-white">
           Rent
         </button>
       </div>

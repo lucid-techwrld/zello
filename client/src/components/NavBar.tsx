@@ -23,7 +23,7 @@ const NavBar: React.FC<NavBarProps> = ({ isMenuOpen, handleMenu }) => {
   const { authenticated, user } = useUser();
   return (
     <div
-      className={`fixed w-full h-full  gradient z-50 top-0 ${
+      className={`fixed w-full h-full  gradient-extra z-50 top-0 ${
         isMenuOpen ? "translate-x-0" : "translate-x-full"
       } transition-all duration-300 ease-in-out`}
     >
