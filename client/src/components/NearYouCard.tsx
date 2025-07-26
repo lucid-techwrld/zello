@@ -1,30 +1,32 @@
-import { MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import type { PropertyType } from "./PropertyCard";
+import placeholderImage from "../assets/icons/placeholder.png";
 
-type NearYouType = {
-  img: string;
-  name: string;
-  address: string;
-  km: number;
-};
-
-const NearYouCard = ({ img, name, address, km }: NearYouType) => {
+const NearYouCard = ({
+  id,
+  title,
+  price,
+  bedrooms,
+  bathrooms,
+  city,
+  state,
+  street,
+  images,
+}: PropertyType) => {
   const navigate = useNavigate();
+
+  const mainImage = images?.[0] || placeholderImage;
   return (
     <div
-      className="relative w-64 min-w-64 h-80 overflow-hidden rounded-2xl "
-      onClick={() => navigate(`/view/${1}`)}
+      className="relative w-64 min-w-64 h-80 overflow-hidden rounded-2xl cursor-pointer"
+      onClick={() => navigate(`/view/${id}`)}
     >
       <div className="absolute inset-0 w-full h-full bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
-      <img src={img} alt="name" className="w-full h-full object-cover" />
+      <img src={mainImage} alt={title} className="w-full h-full object-cover" />
 
-      <div className="absolute top-0 right-0 p-2 flex gap-1 justify-center items-center text-white">
-        <MapPin className="w-5 h-5 " />
-        <p>{km} km</p>
-      </div>
-
-      <div className="absolute bottom-0 p-3  text-white">
-        <p className="font-bold">{name}</p> <p>{address}</p>
+      <div className="absolute bottom-0 p-3 text-white">
+        <p className="font-bold">{title}</p>
+        <p>{`${street}, ${city}, ${state}`}</p>
       </div>
     </div>
   );

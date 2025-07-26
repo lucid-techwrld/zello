@@ -1,30 +1,38 @@
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import map from "../assets/images/map.jfif";
-import mockProducts from "../mockProducts";
-import {
-  ArrowLeftCircle,
-  BedDouble,
-  Bookmark,
-  Map,
-  Toilet,
-} from "lucide-react";
+import placeholderImage from "../assets/icons/placeholder.png";
+import { ArrowLeftCircle, BedDouble, Bookmark, Toilet } from "lucide-react";
 import SellerProfile from "../components/SellerProfile";
 import Gallery from "../components/Gallery";
+import { useProperty } from "../hooks/propertieContext";
+import { useEffect } from "react";
+import LoadingScreen from "./LoadingScree";
 
 const ViewProduct = () => {
-  const { id } = useParams<{ id: string }>();
-
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const { getProperty, property } = useProperty();
+  useEffect(() => {
+    if (id) {
+      getProperty(id);
+    } else {
+      navigate("/");
+    }
+  }, [id]);
 
-  const matchingProduct = mockProducts.find((prod) => prod.id === Number(id));
+  useEffect(() => {
+    if (id && property === null) {
+      return;
+    }
+  }, [property]);
 
-  if (!matchingProduct) {
-    return <div>Product not found</div>;
+  if (!property) {
+    return <LoadingScreen />;
   }
-  const { image, name, desc, price, size, bedroooms, toilets, location } =
-    matchingProduct;
 
+  const address =
+    property?.street + ", " + property?.city + ", " + property?.state;
   return (
     <div className="w-full h-full flex flex-col">
       <div className="w-full h-[500px] relative rounded-b-3xl overflow-hidden">
@@ -35,42 +43,42 @@ const ViewProduct = () => {
           <Bookmark className="w-6 h-6" />
         </div>
 
-        <img src={image} alt="name" className="w-full h-full object-cover" />
+        <img
+          src={property?.images[0] || placeholderImage}
+          alt="name"
+          className="w-full h-full object-cover"
+        />
 
         <div className="absolute bottom-0 p-4">
-          <p className="text-white font-bold text-3xl">{name}</p>
-          <p className="text-gray-300 text-md">{location}</p>
+          <p className="text-white font-bold text-3xl">{property?.title}</p>
+          <p className="text-gray-300 text-md">{address}</p>
         </div>
       </div>
 
       <div className="w-full h-full p-3">
         <p className="text-blue-500 mb-2 font-bold text-2xl">
           <span className="line-through">N</span>
-          {Math.floor(price).toLocaleString()}/year
+          {Math.floor(property?.price).toLocaleString()}/year
         </p>
         <div className="w-full flex gap-4 mt-5 text-md">
           <div className="flex items-center gap-2 ">
             <BedDouble className="w-5 h-5" />{" "}
-            <span className="text-gray-500">{bedroooms}</span>
+            <span className="text-gray-500">{property?.bedrooms}</span>
           </div>
           <div className="flex gap-2">
             <Toilet className="w-5 h-5" />{" "}
-            <span className="text-gray-500">{toilets}</span>
-          </div>
-          <div className="flex gap-2">
-            <Map className="w-5 h-5" />
-            <span className="text-gray-500">{size}</span>
+            <span className="text-gray-500">{property?.bathrooms}</span>
           </div>
         </div>
 
         <hr className="border mt-4 border-gray-300" />
         <p className="mt-2 text-md font-bold text-blue-500">Description</p>
-        <p className="text-md  text-gray-600">{desc}</p>
+        <p className="text-md  text-gray-600">{property?.description}</p>
       </div>
 
       <SellerProfile />
 
-      <Gallery />
+      <Gallery images={property?.images} />
 
       <div className="w-full p-4">
         <h1 className="font-bold text-xl">Distance from you</h1>

@@ -4,11 +4,11 @@ import {
   User,
   MessageCircle,
   BookMarked,
-  MapPinIcon as MapPin,
   LogOut,
   LogIn,
   X,
   PlusCircle,
+  Building,
 } from "lucide-react";
 
 import { NavLink, useNavigate } from "react-router-dom";
@@ -86,7 +86,7 @@ const NavBar: React.FC<NavBarProps> = ({ isMenuOpen, handleMenu }) => {
           </NavLink>
 
           <NavLink
-            to="/nearby"
+            to="/properties"
             className={({ isActive }) =>
               `flex gap-3 items-center transition-all ease-in-out duration-300 ${
                 isActive
@@ -96,7 +96,7 @@ const NavBar: React.FC<NavBarProps> = ({ isMenuOpen, handleMenu }) => {
             }
           >
             {" "}
-            <MapPin /> <span>Nearby</span>
+            <Building /> <span>Properties</span>
           </NavLink>
 
           <NavLink

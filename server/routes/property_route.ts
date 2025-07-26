@@ -15,6 +15,6 @@ const router = express.Router();
 router.post("/upload", verifyUser, upload.array("images"), addProperty);
 router.get("/list", getProperty);
 router.get("/search", searchProperties);
-router.get("/", getProperties);
+router.get("/lists", getProperties);
 
 export default router;

@@ -3,8 +3,7 @@ import { Route, Routes, Navigate } from "react-router-dom";
 import Layout from "./components/layout";
 import Home from "./pages/home";
 import Login from "./pages/Login";
-import SignIn from "./pages/SignIn";
-import Signin2 from "./pages/Signin-two";
+import Signup from "./pages/SignUp";
 import Profile from "./pages/Profile";
 import NearyBy from "./pages/NearyBy";
 import ViewProduct from "./pages/ViewProduct";
@@ -21,6 +20,7 @@ import AboutUs from "./pages/about";
 import ViewProfile from "./pages/ViewProfile";
 import ListProperty from "./pages/AddPropety";
 import ProtectedRoute from "./components/protectedRoute";
+import AddInfo from "./pages/AddInfo";
 
 function App() {
   const { authenticated, setAuthenticated, fetchUserData, user } = useUser();
@@ -88,8 +88,8 @@ function App() {
 
         {/* Auth routes */}
         <Route path="/auth/login" element={<Login />} />
-        <Route path="/auth/join" element={<SignIn />} />
-        <Route path="/auth/join/info/:id" element={<Signin2 />} />
+        <Route path="/auth/join" element={<Signup />} />
+        <Route path="/auth/join/info/:id" element={<AddInfo />} />
         <Route path="/auth/otp/:email" element={<OtpPage />} />
         <Route path="/auth/request-otp" element={<RequestOTP />} />
         <Route

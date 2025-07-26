@@ -3,18 +3,7 @@ import db from "../database/database";
 
 const getProperties = async (req: Request, res: Response) => {
   try {
-    const properties = await db("properties").select(
-      "id",
-      "title",
-      "description",
-      "price",
-      "bedrooms",
-      "bathrooms",
-      "is_available",
-      "street",
-      "city",
-      "state"
-    );
+    const properties = await db("properties").select("*");
     res.json({ success: true, properties });
   } catch (error) {
     console.log(error);
@@ -39,22 +28,7 @@ const getProperty = async (req: CustomerGetPropertyRequest, res: Response) => {
       .json({ success: false, message: "Property id not provided" });
   }
   try {
-    const property = await db("properties")
-      .select(
-        "id",
-        "user_id",
-        "title",
-        "description",
-        "price",
-        "bedrooms",
-        "bathrooms",
-        "is_available",
-        "street",
-        "city",
-        "state"
-      )
-      .where({ id: propId })
-      .first();
+    const property = await db("properties").where({ id: propId }).first();
     if (!property) {
       return res
         .status(404)

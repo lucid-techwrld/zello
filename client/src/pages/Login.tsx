@@ -14,85 +14,89 @@ const Login = () => {
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
-    console.log(data);
+
     const success = await login({
       email: data.email as string,
       password: data.password as string,
     });
-    if (success) {
-      navigate("/");
-    }
+
+    if (success) navigate("/");
     form.reset();
   };
 
   return (
-    <div className="w-full h-full flex flex-col justify-center items-center pt-10">
-      <div className="w-full h-auto px-20">
-        <img src={logo} alt="zello logo" className="w-full h-full" />
-      </div>
-
-      <form
-        onSubmit={(e) => handleLogin(e)}
-        className="w-full h-full p-4 space-y-5"
-      >
-        <p className="text-center font-bold text-2xl">Login</p>
-        <div className="relative">
-          <input
-            type="email"
-            name="email"
-            id="email"
-            placeholder="Email"
-            required
-            className="w-full h-12 bg-gray-200 rounded-md p-3 outline-blue-500"
-          />
-          <MailIcon className="absolute top-2 right-3 w-5 h-5" />
-        </div>
-        <div className="relative">
-          <input
-            type="password"
-            name="password"
-            id="psw"
-            placeholder="Password"
-            required
-            className="w-full h-12 bg-gray-200 rounded-md p-3 outline-blue-500"
-          />
-          <KeySquareIcon className="absolute top-2 right-3 w-5 h-5" />
-        </div>
-        <p
-          className="text-blue-500 text-sm cursor-pointer"
-          onClick={() => navigate("/auth/request-otp")}
-        >
-          Forgotten password?
-        </p>
-        <button
-          type="submit"
-          className="w-full h-12 gradient font-bold text-white flex justify-center items-center"
-        >
-          {loading ? (
-            <Loader className="w-6 h-6 text-white animate-spin" />
-          ) : (
-            "Login"
-          )}
-        </button>
-      </form>
-
-      <div className="w-full h-full p-3">
-        <p className="text-center">or continue with google </p>
-        <button className="mt-5 rounded-md border-2 border-black w-full h-12 font-bold  hover:bg-white bg-black p-2">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 space-y-6">
+        <div className="flex justify-center">
           <img
-            src={googleIcon}
-            alt="google"
-            className="w-full h-full object-contain"
+            src={logo}
+            alt="Zello Logo"
+            className="w-28 h-28 object-contain"
           />
-        </button>
-      </div>
+        </div>
 
-      <p className="text-center mt-5">
-        Dont't have an account?{" "}
-        <span className="font-bold" onClick={() => navigate("/auth/join")}>
-          SignUp
-        </span>
-      </p>
+        <form onSubmit={handleLogin} className="space-y-5">
+          <h2 className="text-2xl font-bold text-center text-gray-800">
+            Welcome back
+          </h2>
+
+          <div className="relative">
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              required
+              className="w-full h-12 px-4 pr-10 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <MailIcon className="absolute right-3 top-3 w-5 h-5 text-gray-500" />
+          </div>
+
+          <div className="relative">
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              required
+              className="w-full h-12 px-4 pr-10 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <KeySquareIcon className="absolute right-3 top-3 w-5 h-5 text-gray-500" />
+          </div>
+
+          <div className="text-right">
+            <button
+              type="button"
+              onClick={() => navigate("/auth/request-otp")}
+              className="text-sm text-blue-500 hover:underline"
+            >
+              Forgot password?
+            </button>
+          </div>
+
+          <button
+            type="submit"
+            className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md flex items-center justify-center transition"
+          >
+            {loading ? <Loader className="w-5 h-5 animate-spin" /> : "Login"}
+          </button>
+        </form>
+
+        <div className="space-y-4">
+          <p className="text-center text-sm text-gray-500">or continue with</p>
+          <button className="flex items-center justify-center w-full h-12 border border-gray-300 rounded-md bg-white hover:shadow">
+            <img src={googleIcon} alt="Google" className="w-14 h-5 mr-2" />
+          </button>
+        </div>
+
+        <p className="text-center text-sm text-gray-600">
+          Don’t have an account?{" "}
+          <button
+            onClick={() => navigate("/auth/join")}
+            className="font-semibold text-blue-500 hover:underline"
+          >
+            Sign Up
+          </button>
+        </p>
+      </div>
     </div>
   );
 };
