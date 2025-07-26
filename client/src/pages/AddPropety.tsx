@@ -5,7 +5,7 @@ import extractAxiosErrorMessage from "../components/extractError";
 import { Loader } from "lucide-react";
 
 export default function ListProperty() {
-  const [images, setImages] = useState<File[]>([]);
+  const [images, setImages] = useState<File[] | null>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -20,9 +20,11 @@ export default function ListProperty() {
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
 
-    images.forEach((img) => {
-      formData.append("images", img);
-    });
+    if (images) {
+      images.forEach((img) => {
+        formData.append("images", img);
+      });
+    }
 
     console.log(formData);
 
@@ -46,6 +48,7 @@ export default function ListProperty() {
       console.log(message);
     } finally {
       setLoading(false);
+      setImages(null);
     }
   };
 
@@ -192,14 +195,15 @@ export default function ListProperty() {
           className="mt-2"
         />
         <div className="grid grid-cols-3 gap-3 mt-4">
-          {images.map((img, index) => (
-            <img
-              key={index}
-              src={URL.createObjectURL(img)}
-              alt="Preview"
-              className="w-28 h-28 object-cover rounded-lg border"
-            />
-          ))}
+          {images.length > 0 &&
+            images.map((img, index) => (
+              <img
+                key={index}
+                src={URL.createObjectURL(img)}
+                alt="Preview"
+                className="w-28 h-28 object-cover rounded-lg border"
+              />
+            ))}
         </div>
       </div>
 

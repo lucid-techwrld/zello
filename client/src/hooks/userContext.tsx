@@ -12,6 +12,7 @@ interface UserContextType {
   authenticated: boolean;
   setAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
   fetchUserData: () => Promise<boolean>;
+  logOut: () => Promise<boolean>;
 }
 
 type LoginType = {
@@ -77,6 +78,27 @@ export const UserProvider = ({ children }: UserProviderProps) => {
     }
   };
 
+  const logOut = async (): Promise<boolean> => {
+    try {
+      const res = await axios.get("http://localhost:5000/auth/logout", {
+        withCredentials: true,
+      });
+
+      if (res.status !== 200) {
+        throw new Error("Fail to log out");
+      }
+
+      console.log(res.data);
+      setAuthenticated(false);
+      setUser(null);
+      return true;
+    } catch (error) {
+      const message = extractAxiosErrorMessage(error);
+      console.log(message);
+      return false;
+    }
+  };
+
   const fetchUserData = async (): Promise<boolean> => {
     setLoading(true);
 
@@ -116,6 +138,7 @@ export const UserProvider = ({ children }: UserProviderProps) => {
         authenticated,
         setAuthenticated,
         fetchUserData,
+        logOut,
       }}
     >
       {children}

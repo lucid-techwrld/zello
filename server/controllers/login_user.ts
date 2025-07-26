@@ -83,4 +83,4 @@ const logOUt = async (req: Request, res: Response) => {
       .json({ error: "Something went wrong while logging out." });
   }
 };
-export { loginUser };
+export { loginUser, logOUt };

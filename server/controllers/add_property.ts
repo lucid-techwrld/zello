@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import db from "../database/database";
-import uploadImage from "./upload_image";
+import { uploadImage, deleteUploadedImage } from "./upload_image";
 
 interface CustomPropertyRequest extends Request {
   body: {
@@ -21,6 +21,8 @@ interface CustomPropertyRequest extends Request {
     role: string;
   };
 }
+
+let imageURLS: any;
 
 const addProperty = async (req: CustomPropertyRequest, res: Response) => {
   const {
@@ -78,7 +80,7 @@ const addProperty = async (req: CustomPropertyRequest, res: Response) => {
       });
     }
 
-    const imageURLS = await uploadImage(images);
+    imageURLS = await uploadImage(images);
 
     const property = {
       user_id: userId,
@@ -91,13 +93,20 @@ const addProperty = async (req: CustomPropertyRequest, res: Response) => {
       street,
       city,
       state,
-      images: JSON.stringify(imageURLS),
+      images: JSON.stringify(imageURLS?.urls),
     };
 
-    const addedProperty = await db("properties")
+    const [addedProperty] = await db("properties")
       .insert(property)
       .returning("*");
 
+    if (!addedProperty) {
+      await deleteUploadedImage(imageURLS.publicIds);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to save property. Images have been deleted.",
+      });
+    }
     return res.status(200).json({
       success: true,
       message: "Property uploaded successfully",

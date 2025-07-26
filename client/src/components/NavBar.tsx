@@ -11,7 +11,7 @@ import {
   PlusCircle,
 } from "lucide-react";
 
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useUser } from "../hooks/userContext";
 
 interface NavBarProps {
@@ -20,7 +20,15 @@ interface NavBarProps {
 }
 
 const NavBar: React.FC<NavBarProps> = ({ isMenuOpen, handleMenu }) => {
-  const { authenticated, user } = useUser();
+  const { authenticated, user, logOut } = useUser();
+  const navigate = useNavigate();
+
+  const handleLogOut = async () => {
+    const result = await logOut();
+    if (result) {
+      navigate("/auth/join");
+    }
+  };
   return (
     <div
       className={`fixed w-full h-full  gradient-extra z-50 top-0 ${
@@ -133,27 +141,29 @@ const NavBar: React.FC<NavBarProps> = ({ isMenuOpen, handleMenu }) => {
             <BookMarked /> <span>Bookmarks</span>
           </NavLink>
 
-          <NavLink
-            to={authenticated ? "/auth/join" : "/auth/login"}
-            className={({ isActive }) =>
-              `flex gap-3 items-center transition-all ease-in-out duration-300 ${
-                isActive
-                  ? "font-bold text-blue-500 bg-white p-3 rounded-r-full w-1/2"
-                  : "px-5"
-              } `
-            }
-          >
-            {" "}
-            {authenticated ? (
-              <>
-                <LogOut /> <span>Sign Out</span>
-              </>
-            ) : (
+          {authenticated ? (
+            <button
+              onClick={handleLogOut}
+              className="flex justify-start p-5 text-red-500 gap-2 font-bold hover:text-red-400"
+            >
+              <LogOut /> Log Out
+            </button>
+          ) : (
+            <NavLink
+              to={"/auth/login"}
+              className={({ isActive }) =>
+                `flex gap-3 items-center transition-all ease-in-out duration-300 ${
+                  isActive
+                    ? "font-bold text-blue-500 bg-white p-3 rounded-r-full w-1/2"
+                    : "px-5"
+                } `
+              }
+            >
               <>
                 <LogIn /> <span>Login</span>
               </>
-            )}
-          </NavLink>
+            </NavLink>
+          )}
         </ul>
       </div>
     </div>
