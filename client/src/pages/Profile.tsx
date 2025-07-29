@@ -11,7 +11,6 @@ const Profile = () => {
   return (
     <div className="profile">
       <h1 className="text-xl font-bold">Profile</h1>
-
       {/* profile card */}
       <div className="profile-card">
         <div className="avatar">

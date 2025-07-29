@@ -5,7 +5,7 @@ import { useProperty } from "../hooks/propertieContext";
 const NearYou = () => {
   const navigate = useNavigate();
   const { nearby } = useProperty();
-
+  console.log("neary tsx", nearby);
   return (
     <div className="p-3 w-full h-auto">
       <div className="flex justify-between">

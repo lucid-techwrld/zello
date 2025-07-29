@@ -21,6 +21,7 @@ import ViewProfile from "./pages/ViewProfile";
 import ListProperty from "./pages/AddPropety";
 import ProtectedRoute from "./components/protectedRoute";
 import AddInfo from "./pages/AddInfo";
+import Properties from "./pages/Properties";
 
 function App() {
   const { authenticated, setAuthenticated, fetchUserData, user } = useUser();
@@ -56,21 +57,14 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute isAuthenticated={authenticated}>
-                <Profile />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/profile/view" element={<ViewProfile />} />
+
           <Route path="/nearby" element={<NearyBy />} />
           <Route path="/messages" element={<div>Messages</div>} />
           <Route path="/bookmarks" element={<div>Bookmarks</div>} />
           <Route path="/search/:search" element={<SearchResult />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/about" element={<AboutUs />} />
+          <Route path="/properties" element={<Properties />} />
           <Route
             path="/add"
             element={
@@ -81,6 +75,15 @@ function App() {
               )
             }
           />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute isAuthenticated={authenticated}>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/profile/view" element={<ViewProfile />} />
         </Route>
 
         <Route path="/notifications" element={<Notifications />} />

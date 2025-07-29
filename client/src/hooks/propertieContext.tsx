@@ -1,41 +1,45 @@
 import axios from "axios";
 import { createContext, useContext, useState, useEffect } from "react";
 import extractAxiosErrorMessage from "../components/extractError";
+import mockProducts from "../mockProducts";
 import { useUser } from "./userContext";
+import type { PropertyType } from "../components/PropertyCard";
 
 interface CreateContextTypes {
   getProperties: () => Promise<void>;
-  properties: propertyType[] | null;
-  nearby: propertyType[] | null;
+  properties: PropertyType[] | null;
+  nearby: PropertyType[] | null;
+  searchResult: PropertyType[] | null;
   loading: boolean;
-  property: propertyType | null;
+  property: PropertyType | null;
   getProperty: (propertyId: string) => Promise<void>;
   getNearbyProperties: (userLocation: string) => Promise<void>;
+  searchProperties: (search: string) => Promise<boolean>;
 }
 
 interface ContextProviderProps {
   children: React.ReactNode;
 }
 
-interface propertyType {
-  id: string;
-  title: string;
-  description: string;
-  type: string;
-  price: number;
-  bedrooms: number;
-  bathrooms: number;
-  street: string;
-  city: string;
-  state: string;
-  images: string[];
-}
 const PropertyContext = createContext<CreateContextTypes | null>(null);
 
+const usedIndices = new Set<number>();
+const defaultNearby: PropertyType[] = [];
+
+while (defaultNearby.length < 3) {
+  const randomIndex = Math.floor(Math.random() * mockProducts.length);
+
+  if (!usedIndices.has(randomIndex)) {
+    usedIndices.add(randomIndex);
+    defaultNearby.push(mockProducts[randomIndex]);
+  }
+}
+
 export const PropertyProvider = ({ children }: ContextProviderProps) => {
-  const [properties, setProperties] = useState<propertyType[] | null>(null);
-  const [property, setProperty] = useState<propertyType | null>(null);
-  const [nearby, setNearby] = useState<propertyType[] | null>(null);
+  const [properties, setProperties] = useState<PropertyType[] | null>(null);
+  const [property, setProperty] = useState<PropertyType | null>(null);
+  const [nearby, setNearby] = useState<PropertyType[]>(defaultNearby);
+  const [searchResult, setSearchResult] = useState<PropertyType[] | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const { user } = useUser();
 
@@ -99,11 +103,40 @@ export const PropertyProvider = ({ children }: ContextProviderProps) => {
         throw new Error("Fail to get nearby property");
       }
 
-      setNearby(res.data?.results);
+      setNearby((prevProp) => {
+        const newItems = res.data?.results.filter(
+          (item: PropertyType) => !prevProp.some((p) => p.id === item.id)
+        );
+        return [...newItems, ...prevProp];
+      });
       console.log("Nearby properies", res.data?.results);
     } catch (error) {
       const message = extractAxiosErrorMessage(error);
       console.log(message);
+    }
+  };
+
+  const searchProperties = async (search: string): Promise<boolean> => {
+    try {
+      const res = await axios.get(
+        `http://localhost:5000/property/search?q=${search}`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (res.status !== 200) {
+        throw new Error("Fail to get nearby property");
+      }
+
+      setSearchResult(res.data?.results);
+
+      console.log("search result", res.data?.results);
+      return true;
+    } catch (error) {
+      const message = extractAxiosErrorMessage(error);
+      console.log(message);
+      return false;
     }
   };
 
@@ -123,6 +156,8 @@ export const PropertyProvider = ({ children }: ContextProviderProps) => {
         property,
         getProperty,
         getNearbyProperties,
+        searchProperties,
+        searchResult,
         nearby,
       }}
     >

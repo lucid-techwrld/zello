@@ -1,33 +1,32 @@
-import RecommendeCard from "./RecommendeCard";
-import image1 from "../assets/images/house-in-Nigeria-image-1.jpeg";
-import image2 from "../assets/images/contemporary-5-bedroom-detached-duplex-with-swimmi-eSDrmfVzd0vqccjgYRNC.jpeg";
+import RecommendCard from "./RecommendeCard";
+import type { PropertyType } from "./PropertyCard";
+import { useProperty } from "../hooks/propertieContext";
 
 const Recommend = () => {
+  const { properties } = useProperty();
+
+  if (!properties) {
+    return;
+  }
+  const usedIndices = new Set<number>();
+  const recommend: PropertyType[] = [];
+
+  while (recommend.length < 2) {
+    const randomIndex = Math.floor(Math.random() * properties.length);
+
+    if (!usedIndices.has(randomIndex)) {
+      usedIndices.add(randomIndex);
+      recommend.push(properties[randomIndex]);
+    }
+  }
   return (
     <div className="w-full h-auto p-3">
       <div className="flex justify-between">
         <p className="text-lg font-bold">You might like</p>{" "}
       </div>
-
-      <div className="flex flex-col gap-y-3">
-        <RecommendeCard
-          image={image1}
-          name="Duplex House"
-          price={324000000}
-          bedrooms={5}
-          toilets={3}
-          location="Lagos, Nigeria"
-        />
-
-        <RecommendeCard
-          image={image2}
-          name="Contemporary Deatched Duplex"
-          price={514020000}
-          bedrooms={5}
-          toilets={4}
-          location="Lekki"
-        />
-      </div>
+      {recommend?.map((prop, idx) => (
+        <RecommendCard key={idx} {...prop} />
+      ))}
     </div>
   );
 };

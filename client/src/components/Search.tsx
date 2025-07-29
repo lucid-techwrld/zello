@@ -1,33 +1,43 @@
 import { SearchIcon, SlidersHorizontal } from "lucide-react";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Search = () => {
   const navigate = useNavigate();
-  const [selectedItems, setSelectedItems] = useState<string[]>([
-    "Single Room",
-    "Self-Contain / Mini Flat",
-  ]);
 
-  const handleItemFilter = (item: string): void => {
-    if (selectedItems.includes(item)) {
-      const newSelect = selectedItems.filter((prod: string) => prod !== item);
-      setSelectedItems(newSelect);
-    } else {
-      setSelectedItems((prevItem) => [...prevItem, item]);
+  const slugify = (text: string) =>
+    text.trim().toLowerCase().replace(/\s+/g, "-");
+
+  const [selectedItems, setSelectedItems] = useState<string>("all");
+
+  const handlePropertyFilter = (word: string): void => {
+    const slug = slugify(word);
+    console.log(slug);
+    setSelectedItems(slug);
+    if (!slug) return;
+    if (slug === "all") {
+      navigate(`/properties`);
+      return;
     }
+    navigate(`/search/${slug}`);
   };
 
+  useEffect(() => {
+    console.log(selectedItems);
+  }, [selectedItems]);
+
   const filterList: string[] = [
-    "Self-Contain / Mini Flat",
+    "All",
+    "Self Contain",
+    "MiniFlat",
     "Single Room",
-    "1 Bedroom Flat",
-    "2 Bedroom Flat",
-    "3 Bedroom Flat",
+    "1-Bedroom-Flat",
+    "2-Bedroom-Flat",
+    "3-Bedroom-Flat",
     "Bungalow",
     "Duplex",
-    "Terrace House",
-    "Detached House",
+    "Terrace",
+    "Detached",
     "Shared Apartment",
     "Penthouse",
     "Mansion",
@@ -35,26 +45,27 @@ const Search = () => {
     "Serviced Apartment",
     "Furnished Apartment",
     "Face-me-I-face-you",
-    "Office Space",
-    "Shop / Store",
+    "Office-Space",
+    "Shop/Store",
     "Warehouse",
-    "Event Center / Hall",
+    "Event-Center/Hall",
   ];
 
-  const handleSearchSubmit = (e: FormEvent<HTMLFormElement>): void => {
+  const handleSearchSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const formData = new FormData(form);
     const keyword = formData.get("search") as string;
-    navigate(`/search/${keyword}`);
+    const slug = slugify(keyword);
+    if (!slug) return;
+    navigate(`/search/${slug}`);
+    form.reset();
   };
 
   return (
     <div className="p-3 w-full h-auto flex flex-col gap-2">
       <div className="w-full flex gap-2 items-center">
-        <form
-          className="w-[85%] relative"
-          onSubmit={(e) => handleSearchSubmit(e)}
-        >
+        <form className="flex-grow relative" onSubmit={handleSearchSubmit}>
           <input
             type="text"
             name="search"
@@ -66,7 +77,7 @@ const Search = () => {
         </form>
 
         {/*Filter*/}
-        <div className="w-[15%] h-10 gradient flex justify-center items-center text-white">
+        <div className="w-10 h-10 gradient flex justify-center items-center text-white">
           <SlidersHorizontal className="w-5 h-5" />
         </div>
       </div>
@@ -76,12 +87,12 @@ const Search = () => {
         {filterList.map((item, index) => (
           <li
             className={`px-4 py-2 whitespace-nowrap ${
-              selectedItems.includes(item)
+              selectedItems === slugify(item)
                 ? "gradient text-white "
                 : "bg-gray-100 rounded-md text-gray-600"
             }`}
             key={index}
-            onClick={() => handleItemFilter(item)}
+            onClick={() => handlePropertyFilter(item)}
           >
             {item}
           </li>

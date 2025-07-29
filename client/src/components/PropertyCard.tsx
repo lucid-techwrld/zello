@@ -7,7 +7,7 @@ export type PropertyType = {
   title: string;
   description: string;
   type: string;
-  price: string | number;
+  price: number;
   bedrooms: number;
   bathrooms: number;
   street: string;
@@ -32,7 +32,7 @@ const PropertyCard = ({
 
   return (
     <div
-      className="w-full h-72 bg-white rounded-lg shadow-md overflow-hidden cursor-pointer transition-transform hover:scale-[1.01]"
+      className="w-full h-72 bg-white rounded-lg shadow-md overflow-hidden cursor-pointer"
       onClick={() => navigate(`/view/${id}`)}
     >
       {/* Top Image */}
@@ -40,7 +40,7 @@ const PropertyCard = ({
         <img
           src={mainImage}
           alt={title}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
           onClick={(e) => {
             e.stopPropagation();
             window.open(mainImage, "_blank");
