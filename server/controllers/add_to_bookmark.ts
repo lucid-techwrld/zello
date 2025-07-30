@@ -116,20 +116,12 @@ const addBookMark = async (req: CustomPropertyRequest, res: Response) => {
 };
 
 interface CustomGetBookmarkRequest extends Request {
-  query: {
-    page?: string;
-    limit?: string;
-  };
   user?: {
     id: string;
   };
 }
 const getBookMarks = async (req: CustomGetBookmarkRequest, res: Response) => {
   const userId = req.user?.id;
-  const page = Math.max(1, parseInt(req.query.page || "1", 10));
-  const limit = Math.max(1, parseInt(req.query.limit || "10", 10));
-
-  const offset = (page - 1) * limit;
 
   if (!userId) {
     return res
@@ -147,25 +139,12 @@ const getBookMarks = async (req: CustomGetBookmarkRequest, res: Response) => {
 
     const bookmarks = await db("bookmarks")
       .select("*")
-      .where({ user_id: userId })
-      .offset(offset)
-      .limit(limit);
-
-    const total = await db("bookmarks")
-      .where({ user_id: userId })
-      .count("id as count")
-      .first();
+      .where({ user_id: userId });
 
     res.status(200).json({
       success: true,
       message: "Bookmarks fecthed succesfully",
       bookmarks,
-      pagination: {
-        page,
-        limit,
-        total: Number(total?.count),
-        totalPages: Math.ceil(Number(total?.count) / limit),
-      },
     });
   } catch (error) {
     console.log(error);

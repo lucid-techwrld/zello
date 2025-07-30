@@ -1,9 +1,10 @@
+const path = require("path");
 const dotenv = require("dotenv");
-dotenv.config({ path: "../.env" });
 
-// Update with your config settings.
+// Load environment variables from root .env file
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
+
 /** @type {import('knex').Knex.Config} */
-
 const config = {
   development: {
     client: "postgresql",
@@ -15,7 +16,13 @@ const config = {
       password: process.env.DB_PASS,
     },
     pool: { min: 2, max: 10 },
-    migrations: { tableName: "knex_migrations" },
+    migrations: {
+      tableName: "knex_migrations",
+      directory: path.resolve(__dirname, "migrations"),
+    },
+    seeds: {
+      directory: path.resolve(__dirname, "seeds"),
+    },
   },
   staging: {
     client: "postgresql",
