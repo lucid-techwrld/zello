@@ -14,6 +14,8 @@ export type PropertyType = {
   city: string;
   state: string;
   images: string[];
+  onRemove?: () => void;
+  property_id?: string;
 };
 
 const PropertyCard = ({
@@ -25,6 +27,7 @@ const PropertyCard = ({
   city,
   state,
   images,
+  onRemove,
 }: PropertyType) => {
   const navigate = useNavigate();
 
@@ -77,6 +80,17 @@ const PropertyCard = ({
             {city}, {state}
           </p>
         </div>
+        {onRemove && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemove();
+            }}
+            className="w-full py-2 mt-2 text-sm font-bold text-white bg-red-500 hover:bg-red-600 rounded-md"
+          >
+            Delete Bookmark
+          </button>
+        )}
       </div>
     </div>
   );

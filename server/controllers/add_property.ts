@@ -121,4 +121,4 @@ const addProperty = async (req: CustomPropertyRequest, res: Response) => {
   }
 };
 
-export default addProperty;
+export { addProperty, CustomPropertyRequest };

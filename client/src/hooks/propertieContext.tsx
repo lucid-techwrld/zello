@@ -10,11 +10,15 @@ interface CreateContextTypes {
   properties: PropertyType[] | null;
   nearby: PropertyType[] | null;
   searchResult: PropertyType[] | null;
+  bookmarkedProperties: PropertyType[] | null;
   loading: boolean;
   property: PropertyType | null;
   getProperty: (propertyId: string) => Promise<void>;
+  getBookMarkeds: () => Promise<void>;
   getNearbyProperties: (userLocation: string) => Promise<void>;
   searchProperties: (search: string) => Promise<boolean>;
+  bookmarkProperty: (property: PropertyType) => Promise<boolean>;
+  deleteBookMark: (propertyId: string | undefined) => Promise<void>;
 }
 
 interface ContextProviderProps {
@@ -40,6 +44,9 @@ export const PropertyProvider = ({ children }: ContextProviderProps) => {
   const [property, setProperty] = useState<PropertyType | null>(null);
   const [nearby, setNearby] = useState<PropertyType[]>(defaultNearby);
   const [searchResult, setSearchResult] = useState<PropertyType[] | null>(null);
+  const [bookmarkedProperties, setBookMarkedPropperties] = useState<
+    PropertyType[] | null
+  >(null);
   const [loading, setLoading] = useState<boolean>(false);
   const { user } = useUser();
 
@@ -140,6 +147,78 @@ export const PropertyProvider = ({ children }: ContextProviderProps) => {
     }
   };
 
+  const bookmarkProperty = async (property: PropertyType): Promise<boolean> => {
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/property/bookmark",
+        property,
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (res.status !== 200) {
+        throw new Error("Fail to get nearby property");
+      }
+
+      console.log(res.data?.bookmark);
+      return true;
+    } catch (error) {
+      const message = extractAxiosErrorMessage(error);
+      console.log(message);
+      return false;
+    }
+  };
+
+  const getBookMarkeds = async (): Promise<void> => {
+    try {
+      const res = await axios.get(
+        "http://localhost:5000/property/bookmarkeds",
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (res.status !== 200) {
+        throw new Error("Fail to get nearby property");
+      }
+
+      console.log("Bookmakrs", res.data?.bookmarks);
+      setBookMarkedPropperties(res.data?.bookmarks);
+    } catch (error) {
+      const message = extractAxiosErrorMessage(error);
+      console.log(message);
+    }
+  };
+
+  const deleteBookMark = async (propertyId: string | undefined) => {
+    try {
+      const res = await axios.delete(
+        `http://localhost:5000/property/bookmark/delete?id=${propertyId}`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (res.status !== 200) {
+        throw new Error("Fail to get nearby property");
+      }
+
+      setBookMarkedPropperties((prevProperties) => {
+        if (!prevProperties) return [];
+        const updated = prevProperties.filter(
+          (prop) => prop.property_id !== propertyId
+        );
+        return updated.length > 0 ? updated : null;
+      });
+
+      console.log("Bookmakrs Deleted", res.data);
+    } catch (error) {
+      const message = extractAxiosErrorMessage(error);
+      console.log(message);
+    }
+  };
+
   useEffect(() => {
     getProperties();
     if (user) {
@@ -159,6 +238,10 @@ export const PropertyProvider = ({ children }: ContextProviderProps) => {
         searchProperties,
         searchResult,
         nearby,
+        bookmarkProperty,
+        bookmarkedProperties,
+        getBookMarkeds,
+        deleteBookMark,
       }}
     >
       {children}

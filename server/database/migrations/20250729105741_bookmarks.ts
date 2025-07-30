@@ -1,10 +1,34 @@
-import type { Knex } from "knex";
+//@ts-nocheck
 
+/**
+ * @param {import ('knex').Knex} knex
+ */
 
-export async function up(knex: Knex): Promise<void> {
-}
+exports.up = async function (knex) {
+  await knex.raw('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
+  return knex.schema.createTable("bookmarks", (table) => {
+    table.uuid("id").primary().defaultTo(knex.raw("uuid_generate_v4()"));
+    table
+      .uuid("user_id")
+      .notNullable()
+      .references("id")
+      .inTable("users")
+      .onDelete("CASCADE");
 
+    table.string("title").notNullable();
+    table.text("description").notNullable();
+    table.string("type").notNullable();
+    table.decimal("price", 12, 2).notNullable();
+    table.integer("bedrooms");
+    table.integer("bathrooms");
+    table.string("street").notNullable();
+    table.string("city").notNullable();
+    table.string("state").notNullable();
 
-export async function down(knex: Knex): Promise<void> {
-}
+    table.jsonb("images").notNullable().defaultTo("[]");
+  });
+};
 
+exports.down = function (knex) {
+  return knex.dropTable("bookmarks");
+};

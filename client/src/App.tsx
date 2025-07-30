@@ -22,6 +22,7 @@ import ListProperty from "./pages/AddPropety";
 import ProtectedRoute from "./components/protectedRoute";
 import AddInfo from "./pages/AddInfo";
 import Properties from "./pages/Properties";
+import BookmarkPage from "./pages/BookMarks";
 
 function App() {
   const { authenticated, setAuthenticated, fetchUserData, user } = useUser();
@@ -60,7 +61,7 @@ function App() {
 
           <Route path="/nearby" element={<NearyBy />} />
           <Route path="/messages" element={<div>Messages</div>} />
-          <Route path="/bookmarks" element={<div>Bookmarks</div>} />
+          <Route path="/bookmarks" element={<BookmarkPage />} />
           <Route path="/search/:search" element={<SearchResult />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/about" element={<AboutUs />} />

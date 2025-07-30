@@ -2,7 +2,13 @@ import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import map from "../assets/images/map.jfif";
 import placeholderImage from "../assets/icons/placeholder.png";
-import { ArrowLeftCircle, BedDouble, Bookmark, Toilet } from "lucide-react";
+import {
+  ArrowLeftCircle,
+  BedDouble,
+  Bookmark,
+  BookmarkCheck,
+  Toilet,
+} from "lucide-react";
 import SellerProfile from "../components/SellerProfile";
 import Gallery from "../components/Gallery";
 import { useProperty } from "../hooks/propertieContext";
@@ -12,7 +18,13 @@ import LoadingScreen from "./LoadingScree";
 const ViewProduct = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const { getProperty, property } = useProperty();
+  const {
+    getProperty,
+    property,
+    bookmarkProperty,
+    bookmarkedProperties,
+    getBookMarkeds,
+  } = useProperty();
   useEffect(() => {
     if (id) {
       getProperty(id);
@@ -25,12 +37,28 @@ const ViewProduct = () => {
     if (id && property === null) {
       return;
     }
-  }, [property]);
+    getBookMarkeds();
+  }, [property?.id]);
 
   if (!property) {
     return <LoadingScreen />;
   }
 
+  const handleBookmark = async () => {
+    const result = await bookmarkProperty(property);
+    if (result) {
+      console.log("Addedd to Bookmarked");
+    }
+  };
+
+  let isBookMarked: boolean = false;
+  if (bookmarkedProperties) {
+    isBookMarked =
+      bookmarkedProperties?.some((prop) => prop?.property_id === property.id) ??
+      false;
+  }
+
+  console.log(isBookMarked);
   const address =
     property?.street + ", " + property?.city + ", " + property?.state;
   return (
@@ -40,7 +68,17 @@ const ViewProduct = () => {
 
         <div className="w-full absolute flex justify-between p-4 text-white top-0">
           <ArrowLeftCircle className="w-8 h-8" onClick={() => navigate(-1)} />
-          <Bookmark className="w-6 h-6" />
+          <button
+            onClick={handleBookmark}
+            disabled={isBookMarked}
+            className="hover:bg-gray-300 p-2 rounded-md border-2 border-white"
+          >
+            {isBookMarked ? (
+              <BookmarkCheck className="w-6 h-6" />
+            ) : (
+              <Bookmark className="w-6 h-6" />
+            )}
+          </button>
         </div>
 
         <img
