@@ -1,10 +1,33 @@
 import { Request, Response } from "express";
 import db from "../database/database";
 
-const getProperties = async (req: Request, res: Response) => {
+interface CustomePropertiesRequest extends Request {
+  query: {
+    page?: string;
+    limit?: string;
+  };
+}
+
+const getProperties = async (req: CustomePropertiesRequest, res: Response) => {
+  const page = Math.max(1, parseInt(req.query.page || "1", 10));
+  const limit = Math.max(1, parseInt(req.query.limit || "10", 10));
+  const offset = (page - 1) * limit;
   try {
-    const properties = await db("properties").select("*");
-    res.json({ success: true, properties });
+    const properties = await db("properties")
+      .select("*")
+      .offset(offset)
+      .limit(limit);
+    const total = await db("properties").count("id as count").first();
+    res.json({
+      success: true,
+      properties,
+      pagination: {
+        page,
+        limit,
+        total: Number(total?.count),
+        totalPages: Math.ceil(Number(total?.count) / limit),
+      },
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({

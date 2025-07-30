@@ -1,12 +1,19 @@
 import axios from "axios";
-import { createContext, useContext, useState, useEffect } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 import extractAxiosErrorMessage from "../components/extractError";
 import mockProducts from "../mockProducts";
 import { useUser } from "./userContext";
 import type { PropertyType } from "../components/PropertyCard";
 
 interface CreateContextTypes {
-  getProperties: () => Promise<void>;
+  getProperties: (page?: number) => Promise<void>;
+  totalPages: number;
   properties: PropertyType[] | null;
   nearby: PropertyType[] | null;
   searchResult: PropertyType[] | null;
@@ -48,27 +55,35 @@ export const PropertyProvider = ({ children }: ContextProviderProps) => {
     PropertyType[] | null
   >(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [totalPages, setTotalPages] = useState<number>(1);
+
   const { user } = useUser();
 
-  const getProperties = async (): Promise<void> => {
+  const getProperties = useCallback(async (page: number = 1): Promise<void> => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:5000/property/lists", {
-        withCredentials: true,
-      });
+
+      const res = await axios.get(
+        `http://localhost:5000/property/lists?page=${page}&limit=14`,
+        {
+          withCredentials: true,
+        }
+      );
 
       if (res.status !== 200) {
-        throw new Error("Fail to get Properties");
+        throw new Error("Failed to get properties");
       }
+
       setProperties(res.data?.properties);
-      console.log(res.data?.properties);
+      setTotalPages(res.data?.pagination.totalPages);
+      console.log("Properties", res.data);
     } catch (error) {
       const message = extractAxiosErrorMessage(error);
       console.log(message);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const getProperty = async (propertyId: string): Promise<void> => {
     if (!propertyId) {
@@ -220,7 +235,6 @@ export const PropertyProvider = ({ children }: ContextProviderProps) => {
   };
 
   useEffect(() => {
-    getProperties();
     if (user) {
       const stateOnly = user?.state.replace(/ State$/i, "").trim();
       getNearbyProperties(stateOnly);
@@ -242,6 +256,7 @@ export const PropertyProvider = ({ children }: ContextProviderProps) => {
         bookmarkedProperties,
         getBookMarkeds,
         deleteBookMark,
+        totalPages,
       }}
     >
       {children}
