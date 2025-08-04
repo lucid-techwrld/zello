@@ -1,19 +1,29 @@
 import { useUser } from "../hooks/userContext";
-import { useState } from "react";
-import profileImage from "../assets/images/profile.jpg";
+import { useEffect, useState } from "react";
+import profileImage from "../assets/icons/placeholder.png";
 import EditProfileModal from "../components/EditProfileModal";
+import { useProperty } from "../hooks/propertieContext";
+import PropertyCard from "../components/PropertyCard";
+import Properties from "./Properties";
 
 const ViewProfile = () => {
   const { user } = useUser();
+  const { leaseUserProperties, getLeaseUserProperties } = useProperty();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  if (user?.role === "lease") {
+    useEffect(() => {
+      getLeaseUserProperties();
+    }, []);
+  }
   return (
-    <div className="min-h-screen bg-white px-4 py-6">
+    <div className="min-h-screen bg-white  py-6">
       {/* Profile Header */}
-      <div className="flex items-center justify-between mb-4 gap-2 ">
+      <div className="flex items-center justify-between mb-4 gap-2 px-3">
         <div className="flex items-center gap-4">
           <img
-            src={user?.avatar || profileImage}
+            src={profileImage}
+            // src={user?.avatar || profileImage}
             alt="profile"
             className="w-16 h-16 rounded-full object-cover"
           />
@@ -34,8 +44,20 @@ const ViewProfile = () => {
 
       {/* Role-based Section */}
       <div className="mt-8">
-        <h3 className="text-lg font-bold mb-4">Your Properties</h3>
-        {/* TODO: map through propeties user have posted, if none return no start listing property */}
+        {user?.role === "lease" ? (
+          <div>
+            <h3 className="text-lg font-bold mb-4">Your Properties</h3>
+            <div className="w-full h-full grid grid-cols-2">
+              {leaseUserProperties?.map((property, idx) => (
+                <PropertyCard key={idx} {...property} />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div>
+            <Properties />
+          </div>
+        )}
       </div>
 
       {/* TODO: show property you may like component */}

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import db from "../database/database";
 import { uploadImage, deleteUploadedImage } from "./upload_image";
+import redis from "../utils/redis";
 
 interface CustomPropertyRequest extends Request {
   body: {
@@ -99,6 +100,9 @@ const addProperty = async (req: CustomPropertyRequest, res: Response) => {
     const [addedProperty] = await db("properties")
       .insert(property)
       .returning("*");
+
+    const keys = await redis.keys("properties:*");
+    if (keys.length > 0) await redis.del(keys);
 
     if (!addedProperty) {
       await deleteUploadedImage(imageURLS.publicIds);

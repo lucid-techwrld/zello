@@ -7,6 +7,7 @@ import { addProperty } from "../controllers/add_property";
 import {
   getProperties,
   getProperty,
+  getUserProperties,
   searchProperties,
 } from "../controllers/get_properties";
 import {
@@ -24,5 +25,6 @@ router.get("/lists", getProperties);
 router.post("/bookmark", verifyUser, addBookMark);
 router.get("/bookmarkeds", verifyUser, getBookMarks);
 router.delete("/bookmark/delete", verifyUser, deleteBookMark);
+router.get("/user/lease", verifyUser, getUserProperties);
 
 export default router;

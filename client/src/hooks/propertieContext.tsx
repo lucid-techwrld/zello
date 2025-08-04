@@ -26,6 +26,8 @@ interface CreateContextTypes {
   searchProperties: (search: string) => Promise<boolean>;
   bookmarkProperty: (property: PropertyType) => Promise<boolean>;
   deleteBookMark: (propertyId: string | undefined) => Promise<void>;
+  getLeaseUserProperties: ()=> void
+  leaseUserProperties: PropertyType[] | null;
 }
 
 interface ContextProviderProps {
@@ -56,6 +58,7 @@ export const PropertyProvider = ({ children }: ContextProviderProps) => {
   >(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [totalPages, setTotalPages] = useState<number>(1);
+  const [leaseUserProperties, setLeaseUserProperties] = useState<PropertyType[] | null>(null)
 
   const { user } = useUser();
 
@@ -234,6 +237,24 @@ export const PropertyProvider = ({ children }: ContextProviderProps) => {
     }
   };
 
+  const getLeaseUserProperties = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/property/user/lease", {
+        withCredentials: true,
+      });
+
+      if (res.status !== 200) {
+        throw new Error("Fail to get nearby property");
+      }
+
+      console.log(res.data?.properties);
+      setLeaseUserProperties(res.data?.properties)
+    } catch (error) {
+      const message = extractAxiosErrorMessage(error);
+      console.log(message);
+    }
+  };
+
   useEffect(() => {
     if (user) {
       const stateOnly = user?.state.replace(/ State$/i, "").trim();
@@ -257,6 +278,8 @@ export const PropertyProvider = ({ children }: ContextProviderProps) => {
         getBookMarkeds,
         deleteBookMark,
         totalPages,
+        getLeaseUserProperties,
+        leaseUserProperties
       }}
     >
       {children}

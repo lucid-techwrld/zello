@@ -1,5 +1,5 @@
 import { Bell, HelpCircle, Info, Trash2 } from "lucide-react";
-import profileImage from "../assets/images/profile.jpg";
+import profileImage from "../assets/icons/placeholder.png";
 import { NavLink } from "react-router-dom";
 import { useUser } from "../hooks/userContext";
 import { useNavigate } from "react-router-dom";
@@ -15,7 +15,8 @@ const Profile = () => {
       <div className="profile-card">
         <div className="avatar">
           <img
-            src={user?.avatar || profileImage}
+            //src={user?.avatar || profileImage}
+            src={profileImage}
             alt="profile"
             className="w-full h-full object-cover"
           />

@@ -9,7 +9,8 @@ const Properties = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const location = useLocation();
   const navigate = useNavigate();
-  const isHomePage = location.pathname === "/";
+  const propertiesPage = location.pathname === "/properties";
+  const homePage = location.pathname === "/";
 
   useEffect(() => {
     getProperties(currentPage);
@@ -20,7 +21,7 @@ const Properties = () => {
   };
 
   const handleNext = () => {
-    if (isHomePage) {
+    if (homePage) {
       navigate("/properties");
       setCurrentPage(2);
     } else {
@@ -32,7 +33,7 @@ const Properties = () => {
 
   return (
     <div className="w-full h-full">
-      {!isHomePage && <Search />}
+      {propertiesPage && <Search />}
       <div className="p-3">
         <h1 className="font-bold text-xl">Properties</h1>
 

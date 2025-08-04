@@ -1,24 +1,40 @@
 import RecommendCard from "./RecommendeCard";
 import type { PropertyType } from "./PropertyCard";
 import { useProperty } from "../hooks/propertieContext";
+import { useEffect, useState } from "react";
 
 const Recommend = () => {
   const { properties } = useProperty();
+  const [recommend, setRecommend] = useState<PropertyType[]>([]);
 
-  if (!properties) {
-    return;
-  }
-  const usedIndices = new Set<number>();
-  const recommend: PropertyType[] = [];
+  // useEffect(() => {
+  //   if (!properties || properties.length < 2) return;
 
-  while (recommend.length < 2) {
-    const randomIndex = Math.floor(Math.random() * properties.length);
+  //   const usedIndices = new Set<number>();
+  //   const selected: PropertyType[] = [];
 
-    if (!usedIndices.has(randomIndex)) {
-      usedIndices.add(randomIndex);
-      recommend.push(properties[randomIndex]);
-    }
-  }
+  //   while (selected.length < 2) {
+  //     const randomIndex = Math.floor(Math.random() * properties.length);
+  //     if (!usedIndices.has(randomIndex)) {
+  //       usedIndices.add(randomIndex);
+  //       selected.push(properties[randomIndex]);
+  //     }
+  //   }
+
+  //   setRecommend(selected);
+  // }, [properties]);
+
+  useEffect(() => {
+    if (!properties || properties.length < 2) return;
+
+    const shuffled = [...properties].sort(() => 0.5 - Math.random());
+    const selected = shuffled.slice(0, 2);
+
+    setRecommend(selected);
+  }, [properties]);
+
+  if (recommend.length === 0) return null;
+
   return (
     <div className="w-full h-auto p-3">
       <div className="flex justify-between">

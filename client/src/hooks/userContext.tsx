@@ -13,6 +13,7 @@ interface UserContextType {
   setAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
   fetchUserData: () => Promise<boolean>;
   logOut: () => Promise<boolean>;
+  updateUserDetails: (userDetails: Partial<UserData>) => Promise<boolean>;
 }
 
 type LoginType = {
@@ -103,7 +104,7 @@ export const UserProvider = ({ children }: UserProviderProps) => {
     setLoading(true);
 
     try {
-      const res = await axios.get("http://localhost:5000/auth/profile", {
+      const res = await axios.get("http://localhost:5000/user/profile", {
         headers: {
           "Content-Type": "application/json",
         },
@@ -127,6 +128,36 @@ export const UserProvider = ({ children }: UserProviderProps) => {
       setLoading(false);
     }
   };
+
+  const updateUserDetails = async (
+    userDetails: Partial<UserData>
+  ): Promise<boolean> => {
+    console.log("Updating user details", userDetails);
+    setLoading(true);
+    try {
+      const res = await axios.patch(
+        "http://localhost:5000/user/update-info",
+        userDetails,
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (res.status !== 200) {
+        throw new Error("Failed to update user details");
+      }
+
+      console.log("User details updated successfully", res.data);
+      await fetchUserData();
+      return true;
+    } catch (error) {
+      const message = extractAxiosErrorMessage(error);
+      console.log("Update user details error", message);
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <UserContext.Provider
       value={{
@@ -139,6 +170,7 @@ export const UserProvider = ({ children }: UserProviderProps) => {
         setAuthenticated,
         fetchUserData,
         logOut,
+        updateUserDetails,
       }}
     >
       {children}

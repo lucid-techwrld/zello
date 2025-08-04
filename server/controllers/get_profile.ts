@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import db from "../database/database";
+import redis from "../utils/redis";
 
 interface CustomRequest extends Request {
   user?: {
@@ -15,7 +16,17 @@ const getProfile = async (req: CustomRequest, res: Response) => {
       .status(400)
       .json({ success: false, message: "Please login and try again" });
   }
+  const cacheKey = `profile:${userId}`;
 
+  try {
+    const cachedProfile = await redis.get(cacheKey);
+    if (cachedProfile) {
+      console.log("Profile Cached Hit Sucessfylly");
+      return res.json({ success: true, profile: JSON.parse(cachedProfile) });
+    }
+  } catch (error) {
+    console.error("Redis Profile cache error:", error);
+  }
   try {
     const profile = await db("users")
       .join("user_info", "users.id", "user_info.user_id")
@@ -40,6 +51,13 @@ const getProfile = async (req: CustomRequest, res: Response) => {
       return res
         .status(404)
         .json({ success: false, message: "Profile not found" });
+    }
+
+    try {
+      await redis.set(cacheKey, JSON.stringify(profile), "EX", 60 * 5);
+      console.log("Profile Cached Sucessfylly");
+    } catch (cacheError) {
+      console.log("❌ Redis error (set):", cacheError);
     }
 
     return res.status(200).json({ success: true, profile });
