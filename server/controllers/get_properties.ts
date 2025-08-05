@@ -151,6 +151,10 @@ const searchProperties = async (req: Request, res: Response) => {
 };
 
 interface CustomLeaseUserRequest extends Request {
+  query: {
+    page?: string;
+    limit?: string;
+  };
   user?: {
     id: string;
     email: string;
@@ -163,11 +167,24 @@ const getUserProperties = async (
 ) => {
   const userId = req.user?.id;
   const role = req.user?.role;
+  const limit = Math.max(1, parseInt(req.query.limit || "1", 10));
+  const page = Math.max(1, parseInt(req.query.page || "10", 10));
+  const offset = (page - 1) * limit;
 
   if (!userId || !role) {
     return res
       .status(400)
       .json({ success: false, message: "Please login and try again" });
+  }
+
+  const cacheKey = `leaseUserP:page=${page}:limit=${limit}`;
+  const cachedResults = await redis.get(cacheKey);
+  if (cachedResults) {
+    try {
+      return res.status(200).json(JSON.parse(cachedResults));
+    } catch (error) {
+      console.log("Error getting cached lease user properties", error);
+    }
   }
   try {
     const user = await db("users").where({ id: userId }).first();
@@ -187,12 +204,28 @@ const getUserProperties = async (
 
     const properties = await db("properties")
       .select("*")
-      .where({ user_id: userId });
+      .where({ user_id: userId })
+      .limit(limit)
+      .offset(offset);
 
-    res.status(200).json({
+    const total = await db("properties").count("id as count").first();
+    const response = {
       success: true,
-      message: "User Properties Fetched successfully",
       properties,
+      pagination: {
+        page,
+        limit,
+        total: Number(total?.count),
+        totalPages: Math.ceil(Number(total?.count) / limit),
+      },
+    };
+    try {
+      await redis.set(cacheKey, JSON.stringify(response), "EX", 60 * 5);
+    } catch (error) {
+      console.error("Error caching lease user properties", error);
+    }
+    res.status(200).json({
+      response,
     });
   } catch (error) {
     console.error("Error fetching user properties", error);

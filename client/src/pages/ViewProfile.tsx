@@ -1,5 +1,5 @@
 import { useUser } from "../hooks/userContext";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import profileImage from "../assets/icons/placeholder.png";
 import EditProfileModal from "../components/EditProfileModal";
 import { useProperty } from "../hooks/propertieContext";
@@ -8,14 +8,64 @@ import Properties from "./Properties";
 
 const ViewProfile = () => {
   const { user } = useUser();
-  const { leaseUserProperties, getLeaseUserProperties } = useProperty();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const {
+    leaseUserProperties,
+    getLeaseUserProperties,
+    hasMore,
+    loadingLeaseProps,
+    isFetchingLeaseRef,
+  } = useProperty();
 
-  if (user?.role === "lease") {
-    useEffect(() => {
-      getLeaseUserProperties();
-    }, []);
-  }
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
+  // Always call useEffect (not conditional). Guard inside the effect.
+  useEffect(() => {
+    if (user?.role !== "lease") return;
+    // fetch page
+    getLeaseUserProperties(currentPage);
+  }, [user?.role, getLeaseUserProperties, currentPage]);
+
+  // IntersectionObserver for infinite scroll (always call hook; guard inside)
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    if (!hasMore) return;
+
+    // If there's an existing observer, disconnect it first
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+    }
+
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (
+          entry.isIntersecting &&
+          !loadingLeaseProps &&
+          !isFetchingLeaseRef.current &&
+          hasMore
+        ) {
+          // only increment page; use functional update
+          setCurrentPage((prev) => prev + 1);
+        }
+      },
+      { root: null, rootMargin: "200px", threshold: 0.1 }
+    );
+
+    observerRef.current.observe(el);
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+        observerRef.current = null;
+      }
+    };
+  }, [hasMore, loadingLeaseProps]);
+
   return (
     <div className="min-h-screen bg-white  py-6">
       {/* Profile Header */}
@@ -45,13 +95,15 @@ const ViewProfile = () => {
       {/* Role-based Section */}
       <div className="mt-8">
         {user?.role === "lease" ? (
-          <div>
+          <div className="p-3">
             <h3 className="text-lg font-bold mb-4">Your Properties</h3>
-            <div className="w-full h-full grid grid-cols-2">
+            <div className="w-full h-full grid grid-cols-2  gap-2">
               {leaseUserProperties?.map((property, idx) => (
-                <PropertyCard key={idx} {...property} />
+                <PropertyCard key={property.id ?? idx} {...property} />
               ))}
             </div>
+            <div ref={sentinelRef} />
+            {loadingLeaseProps && <p>Loading...</p>}
           </div>
         ) : (
           <div>
@@ -59,8 +111,6 @@ const ViewProfile = () => {
           </div>
         )}
       </div>
-
-      {/* TODO: show property you may like component */}
 
       {/* Modal */}
       {isModalOpen && (

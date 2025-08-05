@@ -191,7 +191,7 @@ const deleteBookMark = async (req: CustomDeleteRequest, res: Response) => {
     }
 
     //console.log(propertyId);
-    console.log("Deleting property:", propertyId, "for user:", userId);
+    //console.log("Deleting property:", propertyId, "for user:", userId);
     const deleted = await db("bookmarks")
       .where({ property_id: propertyId, user_id: userId })
       .delete();

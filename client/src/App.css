@@ -17,41 +17,55 @@
   @apply w-32 h-24 rounded-full overflow-hidden;
 }
 
-.loader {
-  width: fit-content;
-  font-weight: bold;
-  font-family: monospace;
-  font-size: 30px;
-  color: #0000;
-  overflow: hidden;
-  animation: l9 5s infinite cubic-bezier(0.3, 1, 0, 1);
+.input-field {
+  @apply w-full h-12 px-4 rounded-md border-2 border-blue-500 outline-none focus:ring-2 focus:ring-blue-300;
 }
-.loader:before {
-  content: "Loading...";
+
+.loader1 {
+  width: 60px;
+  aspect-ratio: 4;
+  --c: #2f25e8 90%, #400cdd00;
+  background: radial-gradient(circle closest-side at left 6px top 50%, var(--c)),
+    radial-gradient(circle closest-side, var(--c)),
+    radial-gradient(circle closest-side at right 6px top 50%, var(--c));
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  animation: l4 1s infinite alternate;
 }
-@keyframes l9 {
-  0% {
-    text-shadow: 0 0 #000, 11ch 0 #0f299b, 22ch 0 #2d043c, 33ch 0 #00a0b0,
-      44ch 0 #3a0f9d;
-  }
-  25% {
-    text-shadow: -11ch 0 #000, 0ch 0 #0f299b, 11ch 0 #2d043c, 22ch 0 #00a0b0,
-      33ch 0 #3a0f9d;
-  }
-  50% {
-    text-shadow: -22ch 0 #000, -11ch 0 #0f299b, 0ch 0 #2d043c, 11ch 0 #00a0b0,
-      22ch 0 #3a0f9d;
-  }
-  75% {
-    text-shadow: -33ch 0 #000, -22ch 0 #0f299b, -11ch 0 #2d043c, 0ch 0 #00a0b0,
-      11ch 0 #3a0f9d;
-  }
-  100% {
-    text-shadow: -44ch 0 #000, -33ch 0 #0f299b, -22ch 0 #2d043c, -11ch 0 #00a0b0,
-      0ch 0 #3a0f9d;
+@keyframes l4 {
+  to {
+    width: 25px;
+    aspect-ratio: 1;
   }
 }
 
-.input-field {
-  @apply w-full h-12 px-4 rounded-md border-2 border-blue-500 outline-none focus:ring-2 focus:ring-blue-300;
+.loader2 {
+  width: 50px;
+  aspect-ratio: 1;
+  display: grid;
+  -webkit-mask: conic-gradient(from 15deg, #0000, #000);
+  animation: l26 1s infinite steps(12);
+}
+.loader,
+.loader:before,
+.loader:after {
+  background: radial-gradient(closest-side at 50% 12.5%, #f03355 96%, #0000) 50%
+      0/20% 80% repeat-y,
+    radial-gradient(closest-side at 12.5% 50%, #f03355 96%, #0000) 0 50%/80% 20%
+      repeat-x;
+}
+.loader:before,
+.loader:after {
+  content: "";
+  grid-area: 1/1;
+  transform: rotate(30deg);
+}
+.loader:after {
+  transform: rotate(60deg);
+}
+
+@keyframes l26 {
+  100% {
+    transform: rotate(1turn);
+  }
 }

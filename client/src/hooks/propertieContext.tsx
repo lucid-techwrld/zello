@@ -5,6 +5,7 @@ import {
   useState,
   useEffect,
   useCallback,
+  useRef,
 } from "react";
 import extractAxiosErrorMessage from "../components/extractError";
 import mockProducts from "../mockProducts";
@@ -26,8 +27,11 @@ interface CreateContextTypes {
   searchProperties: (search: string) => Promise<boolean>;
   bookmarkProperty: (property: PropertyType) => Promise<boolean>;
   deleteBookMark: (propertyId: string | undefined) => Promise<void>;
-  getLeaseUserProperties: ()=> void
+  getLeaseUserProperties: (page: number) => void;
   leaseUserProperties: PropertyType[] | null;
+  loadingLeaseProps: boolean;
+  hasMore: boolean;
+  isFetchingLeaseRef: React.MutableRefObject<boolean>;
 }
 
 interface ContextProviderProps {
@@ -58,7 +62,12 @@ export const PropertyProvider = ({ children }: ContextProviderProps) => {
   >(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [totalPages, setTotalPages] = useState<number>(1);
-  const [leaseUserProperties, setLeaseUserProperties] = useState<PropertyType[] | null>(null)
+  const [leaseUserProperties, setLeaseUserProperties] = useState<
+    PropertyType[]
+  >([]);
+  const [loadingLeaseProps, setLoadingLeaseProps] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const isFetchingLeaseRef = useRef(false);
 
   const { user } = useUser();
 
@@ -237,23 +246,39 @@ export const PropertyProvider = ({ children }: ContextProviderProps) => {
     }
   };
 
-  const getLeaseUserProperties = async () => {
+  const getLeaseUserProperties = useCallback(async (page: number = 1) => {
+    if (isFetchingLeaseRef.current) return;
+
     try {
-      const res = await axios.get("http://localhost:5000/property/user/lease", {
-        withCredentials: true,
+      isFetchingLeaseRef.current = true;
+      setLoadingLeaseProps(true);
+
+      const res = await axios.get(
+        `http://localhost:5000/property/user/lease?page=${page}&limit=10`,
+        { withCredentials: true }
+      );
+
+      if (res.status !== 200) throw new Error("Fail to get lease properties");
+
+      const incoming = Array.isArray(res.data?.properties)
+        ? res.data.properties
+        : [];
+
+      setLeaseUserProperties((prev) => {
+        const existingById = new Set(prev.map((p) => p.id));
+        const filtered = incoming.filter((p) => !existingById.has(p.id));
+        return [...prev, ...filtered];
       });
 
-      if (res.status !== 200) {
-        throw new Error("Fail to get nearby property");
-      }
-
-      console.log(res.data?.properties);
-      setLeaseUserProperties(res.data?.properties)
+      setHasMore(incoming.length >= 10);
     } catch (error) {
       const message = extractAxiosErrorMessage(error);
       console.log(message);
+    } finally {
+      isFetchingLeaseRef.current = false;
+      setLoadingLeaseProps(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -279,7 +304,10 @@ export const PropertyProvider = ({ children }: ContextProviderProps) => {
         deleteBookMark,
         totalPages,
         getLeaseUserProperties,
-        leaseUserProperties
+        leaseUserProperties,
+        loadingLeaseProps,
+        hasMore,
+        isFetchingLeaseRef,
       }}
     >
       {children}

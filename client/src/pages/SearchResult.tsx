@@ -32,7 +32,7 @@ const SearchResult = () => {
         </h1>
 
         {searchResult && searchResult.length > 0 ? (
-          searchResult.map((prod, index) => (
+          searchResult?.map((prod, index) => (
             <RecommendCard key={index} {...prod} />
           ))
         ) : (
