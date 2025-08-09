@@ -20,25 +20,19 @@ const ViewProfile = () => {
   const observerRef = useRef<IntersectionObserver | null>(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState<number>(1);
 
-  // Always call useEffect (not conditional). Guard inside the effect.
   useEffect(() => {
     if (user?.role !== "lease") return;
     // fetch page
-    getLeaseUserProperties(currentPage);
-  }, [user?.role, getLeaseUserProperties, currentPage]);
+    getLeaseUserProperties();
+  }, [user?.role, getLeaseUserProperties]);
 
   // IntersectionObserver for infinite scroll (always call hook; guard inside)
   useEffect(() => {
     const el = sentinelRef.current;
-    if (!el) return;
-    if (!hasMore) return;
+    if (!el || !hasMore) return;
 
-    // If there's an existing observer, disconnect it first
-    if (observerRef.current) {
-      observerRef.current.disconnect();
-    }
+    if (observerRef.current) observerRef.current.disconnect();
 
     observerRef.current = new IntersectionObserver(
       (entries) => {
@@ -47,10 +41,10 @@ const ViewProfile = () => {
           entry.isIntersecting &&
           !loadingLeaseProps &&
           !isFetchingLeaseRef.current &&
-          hasMore
+          hasMore &&
+          (leaseUserProperties?.length ?? 0) > 0
         ) {
-          // only increment page; use functional update
-          setCurrentPage((prev) => prev + 1);
+          getLeaseUserProperties();
         }
       },
       { root: null, rootMargin: "200px", threshold: 0.1 }
@@ -59,12 +53,15 @@ const ViewProfile = () => {
     observerRef.current.observe(el);
 
     return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-        observerRef.current = null;
-      }
+      observerRef.current?.disconnect();
+      observerRef.current = null;
     };
-  }, [hasMore, loadingLeaseProps]);
+  }, [
+    hasMore,
+    getLeaseUserProperties,
+    loadingLeaseProps,
+    leaseUserProperties?.length,
+  ]);
 
   return (
     <div className="min-h-screen bg-white  py-6">
@@ -103,7 +100,9 @@ const ViewProfile = () => {
               ))}
             </div>
             <div ref={sentinelRef} />
-            {loadingLeaseProps && <p>Loading...</p>}
+            <div className="flex justify-center items-center">
+              {loadingLeaseProps && <div className="loader1"></div>}
+            </div>
           </div>
         ) : (
           <div>

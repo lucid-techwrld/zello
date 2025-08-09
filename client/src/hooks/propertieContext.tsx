@@ -12,6 +12,14 @@ import mockProducts from "../mockProducts";
 import { useUser } from "./userContext";
 import type { PropertyType } from "../components/PropertyCard";
 
+interface loadingType {
+  properties: boolean;
+  profile: boolean;
+  nearby: boolean;
+  search: boolean;
+  bookmarks: boolean;
+}
+
 interface CreateContextTypes {
   getProperties: (page?: number) => Promise<void>;
   totalPages: number;
@@ -19,7 +27,7 @@ interface CreateContextTypes {
   nearby: PropertyType[] | null;
   searchResult: PropertyType[] | null;
   bookmarkedProperties: PropertyType[] | null;
-  loading: boolean;
+  loading: loadingType;
   property: PropertyType | null;
   getProperty: (propertyId: string) => Promise<void>;
   getBookMarkeds: () => Promise<void>;
@@ -27,7 +35,7 @@ interface CreateContextTypes {
   searchProperties: (search: string) => Promise<boolean>;
   bookmarkProperty: (property: PropertyType) => Promise<boolean>;
   deleteBookMark: (propertyId: string | undefined) => Promise<void>;
-  getLeaseUserProperties: (page: number) => void;
+  getLeaseUserProperties: () => void;
   leaseUserProperties: PropertyType[] | null;
   loadingLeaseProps: boolean;
   hasMore: boolean;
@@ -60,7 +68,6 @@ export const PropertyProvider = ({ children }: ContextProviderProps) => {
   const [bookmarkedProperties, setBookMarkedPropperties] = useState<
     PropertyType[] | null
   >(null);
-  const [loading, setLoading] = useState<boolean>(false);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [leaseUserProperties, setLeaseUserProperties] = useState<
     PropertyType[]
@@ -68,12 +75,21 @@ export const PropertyProvider = ({ children }: ContextProviderProps) => {
   const [loadingLeaseProps, setLoadingLeaseProps] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const isFetchingLeaseRef = useRef(false);
+  const [cursor, setCursor] = useState<number | null>(null);
+
+  const [loading, setLoading] = useState<loadingType>({
+    properties: false,
+    profile: false,
+    nearby: false,
+    search: false,
+    bookmarks: false,
+  });
 
   const { user } = useUser();
 
   const getProperties = useCallback(async (page: number = 1): Promise<void> => {
     try {
-      setLoading(true);
+      setLoading(() => ({ ...loading, properties: true }));
 
       const res = await axios.get(
         `http://localhost:5000/property/lists?page=${page}&limit=14`,
@@ -93,7 +109,7 @@ export const PropertyProvider = ({ children }: ContextProviderProps) => {
       const message = extractAxiosErrorMessage(error);
       console.log(message);
     } finally {
-      setLoading(false);
+      setLoading(() => ({ ...loading, properties: false }));
     }
   }, []);
 
@@ -126,6 +142,7 @@ export const PropertyProvider = ({ children }: ContextProviderProps) => {
       throw new Error("Property id is not provided");
     }
     try {
+      setLoading(() => ({ ...loading, nearby: true }));
       const res = await axios.get(
         `http://localhost:5000/property/search?q=${userLocation}`,
         {
@@ -147,11 +164,15 @@ export const PropertyProvider = ({ children }: ContextProviderProps) => {
     } catch (error) {
       const message = extractAxiosErrorMessage(error);
       console.log(message);
+    } finally {
+      setLoading(() => ({ ...loading, nearby: false }));
     }
   };
 
   const searchProperties = async (search: string): Promise<boolean> => {
     try {
+      setLoading(() => ({ ...loading, search: true }));
+      setSearchResult(null);
       const res = await axios.get(
         `http://localhost:5000/property/search?q=${search}`,
         {
@@ -171,6 +192,8 @@ export const PropertyProvider = ({ children }: ContextProviderProps) => {
       const message = extractAxiosErrorMessage(error);
       console.log(message);
       return false;
+    } finally {
+      setLoading(() => ({ ...loading, search: false }));
     }
   };
 
@@ -199,6 +222,7 @@ export const PropertyProvider = ({ children }: ContextProviderProps) => {
 
   const getBookMarkeds = async (): Promise<void> => {
     try {
+      setLoading(() => ({ ...loading, bookmarks: true }));
       const res = await axios.get(
         "http://localhost:5000/property/bookmarkeds",
         {
@@ -215,6 +239,8 @@ export const PropertyProvider = ({ children }: ContextProviderProps) => {
     } catch (error) {
       const message = extractAxiosErrorMessage(error);
       console.log(message);
+    } finally {
+      setLoading(() => ({ ...loading, bookmarks: false }));
     }
   };
 
@@ -246,31 +272,44 @@ export const PropertyProvider = ({ children }: ContextProviderProps) => {
     }
   };
 
-  const getLeaseUserProperties = useCallback(async (page: number = 1) => {
-    if (isFetchingLeaseRef.current) return;
+  const getLeaseUserProperties = useCallback(async () => {
+    if (loadingLeaseProps || !hasMore || isFetchingLeaseRef.current) return;
 
     try {
       isFetchingLeaseRef.current = true;
       setLoadingLeaseProps(true);
 
       const res = await axios.get(
-        `http://localhost:5000/property/user/lease?page=${page}&limit=10`,
+        `http://localhost:5000/property/user/lease?cursor=${
+          cursor ?? ""
+        }&limit=10`,
         { withCredentials: true }
       );
 
       if (res.status !== 200) throw new Error("Fail to get lease properties");
 
-      const incoming = Array.isArray(res.data?.properties)
-        ? res.data.properties
-        : [];
+      const { properties, nextCursor } = res.data;
 
       setLeaseUserProperties((prev) => {
         const existingById = new Set(prev.map((p) => p.id));
-        const filtered = incoming.filter((p) => !existingById.has(p.id));
+        const filtered = (properties || []).filter(
+          (p: PropertyType) => !existingById.has(p.id)
+        );
         return [...prev, ...filtered];
       });
 
-      setHasMore(incoming.length >= 10);
+      setCursor(
+        res.data.properties[res.data.properties.length - 1]?.id ?? null
+      );
+
+      if (!nextCursor) {
+        setHasMore(false);
+      } else {
+        setHasMore(true);
+        setCursor(nextCursor);
+      }
+      console.log("Lease User Properties", res.data?.properties);
+      console.log("Lease User Properties", leaseUserProperties);
     } catch (error) {
       const message = extractAxiosErrorMessage(error);
       console.log(message);
@@ -278,7 +317,7 @@ export const PropertyProvider = ({ children }: ContextProviderProps) => {
       isFetchingLeaseRef.current = false;
       setLoadingLeaseProps(false);
     }
-  }, []);
+  }, [cursor, hasMore, loadingLeaseProps]);
 
   useEffect(() => {
     if (user) {

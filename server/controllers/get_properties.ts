@@ -152,7 +152,7 @@ const searchProperties = async (req: Request, res: Response) => {
 
 interface CustomLeaseUserRequest extends Request {
   query: {
-    page?: string;
+    cursor?: string;
     limit?: string;
   };
   user?: {
@@ -161,15 +161,15 @@ interface CustomLeaseUserRequest extends Request {
     role: string;
   };
 }
+
 const getUserProperties = async (
   req: CustomLeaseUserRequest,
   res: Response
 ) => {
   const userId = req.user?.id;
   const role = req.user?.role;
-  const limit = Math.max(1, parseInt(req.query.limit || "1", 10));
-  const page = Math.max(1, parseInt(req.query.page || "10", 10));
-  const offset = (page - 1) * limit;
+  const limit = Math.max(1, parseInt(req.query.limit || "10", 10)); // default to 10
+  const cursor = req.query.cursor?.trim();
 
   if (!userId || !role) {
     return res
@@ -177,15 +177,21 @@ const getUserProperties = async (
       .json({ success: false, message: "Please login and try again" });
   }
 
-  const cacheKey = `leaseUserP:page=${page}:limit=${limit}`;
+  const isValidUUID = (str: string) =>
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+      str
+    );
+
+  const cacheKey = `leaseUserP:cursor=${cursor || "start"}:limit=${limit}`;
   const cachedResults = await redis.get(cacheKey);
   if (cachedResults) {
     try {
       return res.status(200).json(JSON.parse(cachedResults));
     } catch (error) {
-      console.log("Error getting cached lease user properties", error);
+      console.log("Error parsing cached lease user properties", error);
     }
   }
+
   try {
     const user = await db("users").where({ id: userId }).first();
     if (!user) {
@@ -202,31 +208,37 @@ const getUserProperties = async (
       });
     }
 
-    const properties = await db("properties")
+    let query = db("properties")
       .select("*")
       .where({ user_id: userId })
-      .limit(limit)
-      .offset(offset);
+      .orderBy("id", "asc")
+      .limit(limit + 1);
 
-    const total = await db("properties").count("id as count").first();
+    if (cursor && isValidUUID(cursor)) {
+      query = query.andWhere("id", ">", cursor);
+    }
+
+    const properties = await query;
+
+    let nextCursor: string | null = null;
+    if (properties.length > limit) {
+      const nextItem = properties.pop();
+      nextCursor = nextItem?.id || null;
+    }
+
     const response = {
       success: true,
       properties,
-      pagination: {
-        page,
-        limit,
-        total: Number(total?.count),
-        totalPages: Math.ceil(Number(total?.count) / limit),
-      },
+      nextCursor,
     };
+
     try {
       await redis.set(cacheKey, JSON.stringify(response), "EX", 60 * 5);
     } catch (error) {
       console.error("Error caching lease user properties", error);
     }
-    res.status(200).json({
-      response,
-    });
+
+    res.status(200).json(response);
   } catch (error) {
     console.error("Error fetching user properties", error);
     res.status(500).json({

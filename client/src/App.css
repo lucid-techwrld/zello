@@ -24,7 +24,7 @@
 .loader1 {
   width: 60px;
   aspect-ratio: 4;
-  --c: #2f25e8 90%, #400cdd00;
+  --c: #2563eb 90%, #400cdd00;
   background: radial-gradient(circle closest-side at left 6px top 50%, var(--c)),
     radial-gradient(circle closest-side, var(--c)),
     radial-gradient(circle closest-side at right 6px top 50%, var(--c));

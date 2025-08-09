@@ -3,9 +3,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import PropertyCard from "../components/PropertyCard";
 import Search from "../components/Search";
 import { useProperty } from "../hooks/propertieContext";
+import { Loader } from "lucide-react";
 
 const Properties = () => {
-  const { properties, getProperties, totalPages } = useProperty();
+  const { properties, getProperties, totalPages, loading } = useProperty();
   const [currentPage, setCurrentPage] = useState(1);
   const location = useLocation();
   const navigate = useNavigate();
@@ -36,7 +37,11 @@ const Properties = () => {
       {propertiesPage && <Search />}
       <div className="p-3">
         <h1 className="font-bold text-xl">Properties</h1>
-
+        {loading.properties && (
+          <div className="flex justify-center items-center">
+            <Loader className="w-7 h-7 text-blue-500 animate-spin" />
+          </div>
+        )}
         <div className="grid grid-cols-2 gap-2 mt-2">
           {properties?.map((property, idx) => (
             <PropertyCard key={idx} {...property} />

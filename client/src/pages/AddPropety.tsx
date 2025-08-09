@@ -3,10 +3,12 @@ import axios from "axios";
 import React, { useState } from "react";
 import extractAxiosErrorMessage from "../components/extractError";
 import { Loader } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function ListProperty() {
   const [images, setImages] = useState<File[] | null>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -42,6 +44,7 @@ export default function ListProperty() {
       }
 
       console.log(res.data);
+      navigate("/properties");
       form.reset();
     } catch (error) {
       const message = extractAxiosErrorMessage(error);
