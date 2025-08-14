@@ -1,13 +1,14 @@
 import { Bell, HelpCircle, Info, Trash2 } from "lucide-react";
 import profileImage from "../assets/icons/placeholder.png";
 import { NavLink } from "react-router-dom";
-import { useUser } from "../hooks/userContext";
+
 import { useNavigate } from "react-router-dom";
+import useUserStore from "../hooks/useUserStore";
 
 const Profile = () => {
-  const { user } = useUser();
+  const User = useUserStore((state) => state.User);
   const navigate = useNavigate();
-  console.log(user);
+  //console.log(User);
   return (
     <div className="profile">
       <h1 className="text-xl font-bold">Profile</h1>
@@ -15,7 +16,7 @@ const Profile = () => {
       <div className="profile-card">
         <div className="avatar">
           <img
-            //src={user?.avatar || profileImage}
+            //src={User?.avatar || profileImage}
             src={profileImage}
             alt="profile"
             className="w-full h-full object-cover"
@@ -25,10 +26,10 @@ const Profile = () => {
           <div className="text-sm text-gray-500">
             {" "}
             <p className="text-xl font-bold text-black">
-              {user?.first_name} {user?.last_name}
+              {User?.first_name} {User?.last_name}
             </p>
-            <p>{user?.email}</p>
-            <p>{user?.role}</p>
+            <p>{User?.email}</p>
+            <p>{User?.role}</p>
           </div>
           <div className="w-full h-full flex ">
             <button

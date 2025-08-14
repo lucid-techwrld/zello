@@ -2,11 +2,12 @@ import { KeySquareIcon, Loader, MailIcon } from "lucide-react";
 import googleIcon from "../assets/icons/google logo.png";
 import logo from "../assets/icons/zello logo.png";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "../hooks/userContext";
+import useUserStore from "../hooks/useUserStore";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login, loading } = useUser();
+  const login = useUserStore((state) => state.login);
+  const loading = useUserStore((state) => state.loading.SignIn);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

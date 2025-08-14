@@ -1,7 +1,6 @@
 import {
   Bell,
   Home,
-  User,
   MessageCircle,
   BookMarked,
   LogOut,
@@ -9,10 +8,11 @@ import {
   X,
   PlusCircle,
   Building,
+  User2,
 } from "lucide-react";
 
 import { NavLink, useNavigate } from "react-router-dom";
-import { useUser } from "../hooks/userContext";
+import useUserStore from "../hooks/useUserStore";
 
 interface NavBarProps {
   isMenuOpen: boolean;
@@ -20,7 +20,10 @@ interface NavBarProps {
 }
 
 const NavBar: React.FC<NavBarProps> = ({ isMenuOpen, handleMenu }) => {
-  const { authenticated, user, logOut } = useUser();
+  const isAuthenticated = useUserStore((state) => state.isAuthenticated);
+  const User = useUserStore((state) => state.User);
+  const logOut = useUserStore((state) => state.logOut);
+  const user = User || null;
   const navigate = useNavigate();
 
   const handleLogOut = async () => {
@@ -82,7 +85,7 @@ const NavBar: React.FC<NavBarProps> = ({ isMenuOpen, handleMenu }) => {
             }
           >
             {" "}
-            <User /> <span>Profile</span>
+            <User2 /> <span>Profile</span>
           </NavLink>
 
           <NavLink
@@ -141,7 +144,7 @@ const NavBar: React.FC<NavBarProps> = ({ isMenuOpen, handleMenu }) => {
             <BookMarked /> <span>Bookmarks</span>
           </NavLink>
 
-          {authenticated ? (
+          {isAuthenticated ? (
             <button
               onClick={handleLogOut}
               className="flex justify-start p-5 text-red-500 gap-2 font-bold hover:text-red-400"

@@ -1,10 +1,11 @@
 import RecommendCard from "./RecommendeCard";
 import type { PropertyType } from "./PropertyCard";
-import { useProperty } from "../hooks/propertieContext";
 import { useEffect, useState } from "react";
+import usePropertyStore from "../hooks/usePropertyStore";
 
 const Recommend = () => {
-  const { properties } = useProperty();
+  const properties = usePropertyStore((state) => state.properties);
+
   const [recommend, setRecommend] = useState<PropertyType[]>([]);
 
   // useEffect(() => {

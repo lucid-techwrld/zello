@@ -1,17 +1,21 @@
 import Search from "../components/Search";
 import PropertyCard from "../components/PropertyCard";
-import { useProperty } from "../hooks/propertieContext";
 import { Loader } from "lucide-react";
+import usePropertyStore from "../hooks/usePropertyStore";
+import useUserStore from "../hooks/useUserStore";
 
 const NearyBy = () => {
-  const { properties, loading } = useProperty();
+  const User = useUserStore((state) => state.User);
+  const nearby = usePropertyStore((state) => state.nearby);
+  const loading = usePropertyStore((state) => state.loading.nearby);
 
+  const properties = User?.state ? nearby : [];
   return (
     <div className="w-full h-full">
       <Search />
       <div className="w-full h-full p-3">
         <h1 className="text-xl font-bold">Nearby Properties</h1>
-        {loading.nearby && (
+        {loading && (
           <div className="flex justify-center items-center">
             <Loader className="w-7 h-7 text-blue-500 animate-spin" />
           </div>

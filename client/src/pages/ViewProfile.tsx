@@ -1,48 +1,55 @@
-import { useUser } from "../hooks/userContext";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, Useref } from "react";
 import profileImage from "../assets/icons/placeholder.png";
 import EditProfileModal from "../components/EditProfileModal";
-import { useProperty } from "../hooks/propertieContext";
 import PropertyCard from "../components/PropertyCard";
 import Properties from "./Properties";
+import usePropertyStore from "../hooks/usePropertyStore";
+import useUserStore from "../hooks/useUserStore";
 
 const ViewProfile = () => {
-  const { user } = useUser();
-  const {
-    leaseUserProperties,
-    getLeaseUserProperties,
-    hasMore,
-    loadingLeaseProps,
-    isFetchingLeaseRef,
-  } = useProperty();
-
-  const sentinelRef = useRef<HTMLDivElement | null>(null);
-  const observerRef = useRef<IntersectionObserver | null>(null);
+  const User = useUserStore((state) => state.User);
+  // Extract only the needed values, not the whole object, to avoid re-renders
+  const leaseUserProperties = usePropertyStore(
+    (state) => state.leaseUserProperties
+  );
+  const hasMore = usePropertyStore((state) => state.hasMore);
+  const loadingLeaseProps = usePropertyStore(
+    (state) => state.loadingLeaseProps
+  );
+  const isFetchingLeaseRef = usePropertyStore(
+    (state) => state.isFetchingLeaseRef
+  );
+  // Memoize the function so its reference is stable
+  const getLeaseUserProperties = usePropertyStore(
+    (state) => state.getLeaseUserProperties
+  );
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    if (user?.role !== "lease") return;
-    // fetch page
+    if (User?.role !== "lease") return;
     getLeaseUserProperties();
-  }, [user?.role, getLeaseUserProperties]);
+    // Only depend on User?.role and the stable function reference
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [User?.role]);
 
-  // IntersectionObserver for infinite scroll (always call hook; guard inside)
+  const sentinelRef = Useref<HTMLDivElement | null>(null);
+  const observerRef = Useref<IntersectionObserver | null>(null);
+
   useEffect(() => {
     const el = sentinelRef.current;
     if (!el || !hasMore) return;
 
     if (observerRef.current) observerRef.current.disconnect();
 
-    observerRef.current = new IntersectionObserver(
+    observerRef.current = new window.IntersectionObserver(
       (entries) => {
         const entry = entries[0];
         if (
           entry.isIntersecting &&
-          !loadingLeaseProps &&
           !isFetchingLeaseRef.current &&
           hasMore &&
-          (leaseUserProperties?.length ?? 0) > 0
+          !loadingLeaseProps
         ) {
           getLeaseUserProperties();
         }
@@ -51,17 +58,10 @@ const ViewProfile = () => {
     );
 
     observerRef.current.observe(el);
-
-    return () => {
-      observerRef.current?.disconnect();
-      observerRef.current = null;
-    };
-  }, [
-    hasMore,
-    getLeaseUserProperties,
-    loadingLeaseProps,
-    leaseUserProperties?.length,
-  ]);
+    return () => observerRef.current?.disconnect();
+    // Only depend on hasMore, loadingLeaseProps, and the stable function reference
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasMore, loadingLeaseProps]);
 
   return (
     <div className="min-h-screen bg-white  py-6">
@@ -70,15 +70,15 @@ const ViewProfile = () => {
         <div className="flex items-center gap-4">
           <img
             src={profileImage}
-            // src={user?.avatar || profileImage}
+            // src={User?.avatar || profileImage}
             alt="profile"
             className="w-16 h-16 rounded-full object-cover"
           />
           <div>
             <h2 className="text-xl font-semibold">
-              {user?.first_name} {user?.last_name}
+              {User?.first_name} {User?.last_name}
             </h2>
-            <p className="text-gray-600 text-sm">{user?.email}</p>
+            <p className="text-gray-600 text-sm">{User?.email}</p>
           </div>
         </div>
         <button
@@ -91,7 +91,7 @@ const ViewProfile = () => {
 
       {/* Role-based Section */}
       <div className="mt-8">
-        {user?.role === "lease" ? (
+        {User?.role === "lease" ? (
           <div className="p-3">
             <h3 className="text-lg font-bold mb-4">Your Properties</h3>
             <div className="w-full h-full grid grid-cols-2  gap-2">
@@ -113,7 +113,7 @@ const ViewProfile = () => {
 
       {/* Modal */}
       {isModalOpen && (
-        <EditProfileModal user={user} onClose={() => setIsModalOpen(false)} />
+        <EditProfileModal User={User} onClose={() => setIsModalOpen(false)} />
       )}
     </div>
   );

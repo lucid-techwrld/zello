@@ -2,11 +2,15 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import PropertyCard from "../components/PropertyCard";
 import Search from "../components/Search";
-import { useProperty } from "../hooks/propertieContext";
 import { Loader } from "lucide-react";
+import usePropertyStore from "../hooks/usePropertyStore";
 
 const Properties = () => {
-  const { properties, getProperties, totalPages, loading } = useProperty();
+  const getProperties = usePropertyStore((state) => state.getProperties);
+  const properties = usePropertyStore((state) => state.properties);
+  const totalPages = usePropertyStore((state) => state.totalPages);
+  const loading = usePropertyStore((state) => state.loading.properties);
+
   const [currentPage, setCurrentPage] = useState(1);
   const location = useLocation();
   const navigate = useNavigate();
@@ -37,7 +41,7 @@ const Properties = () => {
       {propertiesPage && <Search />}
       <div className="p-3">
         <h1 className="font-bold text-xl">Properties</h1>
-        {loading.properties && (
+        {loading && (
           <div className="flex justify-center items-center">
             <Loader className="w-7 h-7 text-blue-500 animate-spin" />
           </div>

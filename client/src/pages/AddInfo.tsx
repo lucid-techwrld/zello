@@ -1,9 +1,10 @@
-import axios from "axios";
 import { ArrowLeft, Loader } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Success from "../components/Success";
 import extractAxiosErrorMessage from "../components/extractError";
+import type { UserInfo } from "../hooks/useUserStore";
+import useUserStore from "../hooks/useUserStore";
 
 const AddInfo = () => {
   const navigate = useNavigate();
@@ -14,11 +15,18 @@ const AddInfo = () => {
     return null;
   }
 
-  const [role, setRole] = useState<string>("Rent");
-  const [loading, setLoading] = useState<boolean>(false);
+  enum rolesEnum {
+    Rent = "Rent",
+    Lease = "Lease",
+  }
+
+  const [role, setRole] = useState<rolesEnum>(rolesEnum.Rent);
   const [showToast, setShowToast] = useState<boolean>(false);
 
-  const handleRoleChange = (selected: string) => {
+  const addUserDetails = useUserStore((state) => state.addUserDetails);
+  const loading = useUserStore((state) => state.loading.UserDetails);
+
+  const handleRoleChange = (selected: rolesEnum) => {
     if (selected !== role) setRole(selected);
   };
 
@@ -30,7 +38,7 @@ const AddInfo = () => {
       formData.entries()
     );
 
-    const payload = {
+    const payload: UserInfo = {
       ...rest,
       role: role.toLowerCase(),
       userId: id,
@@ -38,18 +46,11 @@ const AddInfo = () => {
     };
 
     try {
-      setLoading(true);
-      const res = await axios.post(
-        "http://localhost:5000/auth/add-details",
-        payload,
-        {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        }
-      );
-
-      if (res.status !== 201) throw new Error("Failed to add details");
-
+      const res = await addUserDetails(payload);
+      if (!res) {
+        console.error("Failed to add user details");
+        return;
+      }
       setShowToast(true);
       setTimeout(() => {
         setShowToast(false);
@@ -60,11 +61,10 @@ const AddInfo = () => {
       console.log("Signup Error:", message);
     } finally {
       form.reset();
-      setLoading(false);
     }
   };
 
-  const roleOptions = ["Rent", "Lease"];
+  const roleOptions = Object.values(rolesEnum);
 
   return (
     <div className="w-full h-full p-6 max-w-xl mx-auto">

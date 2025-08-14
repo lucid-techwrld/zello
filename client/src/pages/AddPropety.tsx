@@ -1,13 +1,13 @@
-// ListProperty.tsx
-import axios from "axios";
 import React, { useState } from "react";
 import extractAxiosErrorMessage from "../components/extractError";
 import { Loader } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import usePropertyStore from "../hooks/usePropertyStore";
 
 export default function ListProperty() {
   const [images, setImages] = useState<File[] | null>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const addProperty = usePropertyStore((state) => state.addProperty);
+  const loading = usePropertyStore((state) => state.loading.addProperty);
   const navigate = useNavigate();
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -18,7 +18,6 @@ export default function ListProperty() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
 
@@ -28,32 +27,23 @@ export default function ListProperty() {
       });
     }
 
-    console.log(formData);
+    //console.log(formData);
 
     try {
-      const res = await axios.post(
-        "http://localhost:5000/property/upload",
-        formData,
-        {
-          withCredentials: true,
-        }
-      );
-
-      if (res.status !== 200) {
-        throw new Error("Fail to upload property");
+      const success = await addProperty(formData);
+      if (success) {
+        navigate("/properties");
       }
-
-      console.log(res.data);
-      navigate("/properties");
       form.reset();
     } catch (error) {
       const message = extractAxiosErrorMessage(error);
       console.log(message);
     } finally {
-      setLoading(false);
       setImages(null);
     }
   };
+
+  if (!images) return null;
 
   return (
     <form

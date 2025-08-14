@@ -1,11 +1,12 @@
 import NearYouCard from "./NearYouCard";
 import { useNavigate } from "react-router-dom";
-import { useProperty } from "../hooks/propertieContext";
+import usePropertyStore from "../hooks/usePropertyStore";
 
 const NearYou = () => {
   const navigate = useNavigate();
-  const { nearby } = useProperty();
-  console.log("neary tsx", nearby);
+  const nearby = usePropertyStore((state) => state.nearby);
+
+  console.log("nearby tsx", nearby);
   return (
     <div className="p-3 w-full h-auto">
       <div className="flex justify-between">

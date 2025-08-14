@@ -11,20 +11,21 @@ import {
 } from "lucide-react";
 import SellerProfile from "../components/SellerProfile";
 import Gallery from "../components/Gallery";
-import { useProperty } from "../hooks/propertieContext";
 import { useEffect } from "react";
 import LoadingScreen from "./LoadingScree";
+import usePropertyStore from "../hooks/usePropertyStore";
 
 const ViewProduct = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const {
-    getProperty,
-    property,
-    bookmarkProperty,
-    bookmarkedProperties,
-    getBookMarkeds,
-  } = useProperty();
+  const getProperty = usePropertyStore((state) => state.getProperty);
+  const property = usePropertyStore((state) => state.property);
+  const bookmarkProperty = usePropertyStore((state) => state.bookmarkProperty);
+  const bookmarkedProperties = usePropertyStore(
+    (state) => state.bookmarkedProperties
+  );
+  const getBookMarkeds = usePropertyStore((state) => state.getBookMarkeds);
+
   useEffect(() => {
     if (id) {
       getProperty(id);

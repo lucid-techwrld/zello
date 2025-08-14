@@ -1,20 +1,7 @@
 import { X, Loader } from "lucide-react";
 import profileImage from "../assets/icons/placeholder.png";
-import { useUser } from "../hooks/userContext";
-
-type UserData = {
-  id: string;
-  email: string;
-  avatar: string;
-  first_name: string;
-  last_name: string;
-  role: string;
-  dob: string;
-  street: string;
-  city: string;
-  state: string;
-  country: string;
-};
+import useUserStore from "../hooks/useUserStore";
+import type { UserData } from "../hooks/useUserStore";
 
 interface EditProfileProp {
   user: UserData | null;
@@ -22,7 +9,8 @@ interface EditProfileProp {
 }
 
 const EditProfileModal: React.FC<EditProfileProp> = ({ user, onClose }) => {
-  const { updateUserDetails, loading } = useUser();
+  const updateUserDetails = useUserStore((state) => state.updateUserDetails);
+  const loading = useUserStore((state) => state.loading.UpdateUser);
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,7 +18,7 @@ const EditProfileModal: React.FC<EditProfileProp> = ({ user, onClose }) => {
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
     const result = await updateUserDetails(data as Partial<UserData>);
-    if(result) onClose();
+    if (result) onClose();
     console.log("Form submitted", data);
   };
   return (

@@ -2,13 +2,14 @@ import { KeySquareIcon, MailIcon, Loader } from "lucide-react";
 import logo from "../assets/icons/zello logo.png";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import axios from "axios";
 import extractAxiosErrorMessage from "../components/extractError";
+import useUserStore from "../hooks/useUserStore";
 
 const Signup = () => {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const createUser = useUserStore((state) => state.createUser);
+  const loading = useUserStore((state) => state.loading.SignUp);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,35 +19,23 @@ const Signup = () => {
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
 
-    setLoading(true);
     try {
-      const res = await axios.post(
-        "http://localhost:5000/auth/register",
-        {
-          email: data.email as string,
-          password: data.psw as string,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
-
-      if (res.status !== 201) {
-        throw new Error("Failed to create user");
+      const res = await createUser({
+        email: data.email as string,
+        password: data.psw as string,
+      });
+      if (!res || !res.success) {
+        setError("Failed to create account. Please try again.");
+        return;
       }
-
-      console.log("User created successfully:", res.data);
-      navigate(`/auth/otp/${res.data.email}`);
+      navigate(`/auth/otp/${res.res?.email}`);
     } catch (err) {
-      const message = extractAxiosErrorMessage(err);
+      const message =
+        extractAxiosErrorMessage(err) || "An error occurred. Please try again.";
       setError(message);
       console.log("Signup Error:", message);
     } finally {
       form.reset();
-      setLoading(false);
     }
   };
 

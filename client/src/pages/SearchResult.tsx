@@ -1,14 +1,17 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useProperty } from "../hooks/propertieContext";
 import { useEffect } from "react";
 import RecommendCard from "../components/RecommendeCard";
 import Search from "../components/Search";
 import { Loader } from "lucide-react";
+import usePropertyStore from "../hooks/usePropertyStore";
 
 const SearchResult = () => {
   const navigate = useNavigate();
   const { search } = useParams<{ search: string }>();
-  const { searchResult, searchProperties, loading } = useProperty();
+
+  const searchProperties = usePropertyStore((state) => state.searchProperties);
+  const searchResult = usePropertyStore((state) => state.searchResult);
+  const loading = usePropertyStore((state) => state.loading.search);
 
   useEffect(() => {
     if (!search) {
@@ -31,7 +34,7 @@ const SearchResult = () => {
         <h1 className="font-bold text-xl mb-4">
           Here's your search result for "{search}"
         </h1>
-        {loading.search && (
+        {loading && (
           <div className="flex justify-center items-center">
             <Loader className="w-7 h-7 text-blue-500 animate-spin" />
           </div>
@@ -42,8 +45,7 @@ const SearchResult = () => {
           ))
         ) : (
           <p>
-            {!loading.search &&
-              `No matching product found for ${search}. Try again.`}
+            {!loading && `No matching product found for ${search}. Try again.`}
           </p>
         )}
       </div>

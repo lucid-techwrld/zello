@@ -12,7 +12,6 @@ import Notifications from "./pages/Notifications";
 import OtpPage from "./pages/OtpPage";
 import RequestOTP from "./pages/RequestOTP";
 import ForgottenPassword from "./pages/ForgottenPassword";
-import { useUser } from "./hooks/userContext";
 import { useEffect, useState } from "react";
 import LoadingScreen from "./pages/LoadingScree";
 import FAQ from "./pages/faq";
@@ -23,10 +22,20 @@ import ProtectedRoute from "./components/protectedRoute";
 import AddInfo from "./pages/AddInfo";
 import Properties from "./pages/Properties";
 import BookmarkPage from "./pages/BookMarks";
+import usePropertyStore from "./hooks/usePropertyStore";
+import useUserStore from "./hooks/useUserStore";
 
 function App() {
-  const { authenticated, setAuthenticated, fetchUserData, user } = useUser();
+  const isAuthenticated = useUserStore((state) => state.isAuthenticated);
+  const setAuthenticated = useUserStore((state) => state.setAuthenticated);
+  const fetchUserData = useUserStore((state) => state.fetchUserData);
+  const User = useUserStore((state) => state.User);
+
   const [initialized, setInitialized] = useState(false);
+
+  const getNearbyProperties = usePropertyStore(
+    (state) => state.getNearbyProperties
+  );
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -44,6 +53,12 @@ function App() {
     checkAuth();
   }, []);
 
+  useEffect(() => {
+    if (User?.state) {
+      getNearbyProperties(User.state);
+    }
+  }, [User?.state, getNearbyProperties]);
+
   if (!initialized) return <LoadingScreen />;
 
   return (
@@ -53,7 +68,7 @@ function App() {
           <Route
             path="/"
             element={
-              <ProtectedRoute isAuthenticated={authenticated}>
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
                 <Home />
               </ProtectedRoute>
             }
@@ -69,7 +84,7 @@ function App() {
           <Route
             path="/add"
             element={
-              user?.role === "lease" ? (
+              User?.role === "lease" ? (
                 <ListProperty />
               ) : (
                 <Navigate to="/" replace />
@@ -79,7 +94,7 @@ function App() {
           <Route
             path="/profile"
             element={
-              <ProtectedRoute isAuthenticated={authenticated}>
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
                 <Profile />
               </ProtectedRoute>
             }
