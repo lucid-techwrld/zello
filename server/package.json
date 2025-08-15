@@ -8,7 +8,7 @@
     "start": "node dist/server.js",
     "migrate:prod": "cd database && knex migrate:latest --env production --knexfile ./knexfile.ts --migrations-directory ./migrations",
     "migrate:dev": "cd database && knex migrate:latest --env development --knexfile ./knexfile.ts --migrations-directory ./migrations",
-    "migrate:prod:local": "DATABASE_URL=$DATABASE_URL_PROD_EXTERNAL cd database && knex migrate:latest --env production --knexfile ./knexfile.ts --migrations-directory ./migrations",
+    "migrate:rollback": "cd database && knex migrate:rollback --knexfile ./knexfile.ts --migrations-directory ./migrations",
     "build": "tsc"
   },
   "keywords": [],
@@ -40,6 +40,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/knex": "^0.15.2",
     "@types/multer": "^2.0.0",
+    "cross-env": "^10.0.0",
     "express": "^5.1.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
