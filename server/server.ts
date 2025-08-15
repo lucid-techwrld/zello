@@ -14,7 +14,7 @@ const app = express();
 app.use(cookieParser());
 app.use(express.json());
 
-const whiteList = ["http://localhost:5173"];
+const whiteList = ["http://localhost:5173", "http://localhost:5000"];
 const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
     if (!origin || whiteList.includes(origin)) {
