@@ -21,7 +21,7 @@ interface UserStore {
   updateUserDetails: (userDetails: Partial<UserData>) => Promise<boolean>;
   createUser: (
     payload: UserCredential
-  ) => Promise<{ res: any; success: boolean } | false>;
+  ) => Promise<{ res: any; success: boolean; message: string } | false>;
   addUserDetails: (payload: UserInfo) => Promise<boolean>;
   loading: LoadingState;
 }
@@ -56,7 +56,7 @@ type UserInfo = {
   };
 };
 
-const useUserStore = create<UserStore>((set, get, store) => {
+const useUserStore = create<UserStore>((set, get) => {
   return {
     User: null,
     isAuthenticated: false,
@@ -83,16 +83,12 @@ const useUserStore = create<UserStore>((set, get, store) => {
       const fetchUserData = get().fetchUserData;
       setLoading("SignIn", true);
       try {
-        const res = await axios.post(
-          "http://localhost:5000/auth/login",
-          payload,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-            withCredentials: true,
-          }
-        );
+        const res = await axios.post("/auth/login", payload, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        });
 
         if (res.status !== 200) {
           throw new Error("Fail to login");
@@ -116,7 +112,7 @@ const useUserStore = create<UserStore>((set, get, store) => {
 
     logOut: async (): Promise<boolean> => {
       try {
-        const res = await axios.get("http://localhost:5000/auth/logout", {
+        const res = await axios.get("/auth/logout", {
           withCredentials: true,
         });
 
@@ -139,31 +135,27 @@ const useUserStore = create<UserStore>((set, get, store) => {
 
     createUser: async (
       payload: UserCredential
-    ): Promise<{ res: any; success: boolean } | false> => {
+    ): Promise<{ res: any; success: boolean; message: string } | false> => {
       const setLoading = get().setLoading;
       setLoading("SignUp", true);
       try {
-        const res = await axios.post(
-          "http://localhost:5000/auth/register",
-          payload,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-            withCredentials: true,
-          }
-        );
+        const res = await axios.post("/auth/register", payload, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        });
 
         if (res.status !== 201) {
           throw new Error("Failed to create user");
         }
 
         console.log("User created successfully:", res.data);
-        return { res: res.data, success: true };
+        return { res: res.data, success: true, message: res.data.message };
       } catch (error) {
         const message = extractAxiosErrorMessage(error);
         console.log("Signup Error:", message);
-        return false;
+        return { res: null, success: false, message };
       } finally {
         setLoading("SignUp", false);
       }
@@ -174,7 +166,7 @@ const useUserStore = create<UserStore>((set, get, store) => {
       setLoading("UserData", true);
 
       try {
-        const res = await axios.get("http://localhost:5000/user/profile", {
+        const res = await axios.get("/user/profile", {
           headers: {
             "Content-Type": "application/json",
           },
@@ -215,13 +207,9 @@ const useUserStore = create<UserStore>((set, get, store) => {
       setLoading("UpdateUser", true);
       console.log("Updating user details", userDetails);
       try {
-        const res = await axios.patch(
-          "http://localhost:5000/user/update-info",
-          userDetails,
-          {
-            withCredentials: true,
-          }
-        );
+        const res = await axios.patch("/user/update-info", userDetails, {
+          withCredentials: true,
+        });
 
         if (res.status !== 200) {
           throw new Error("Failed to update user details");
@@ -243,14 +231,10 @@ const useUserStore = create<UserStore>((set, get, store) => {
       const setLoading = get().setLoading;
       setLoading("UserDetails", true);
       try {
-        const res = await axios.post(
-          "http://localhost:5000/auth/add-details",
-          payload,
-          {
-            headers: { "Content-Type": "application/json" },
-            withCredentials: true,
-          }
-        );
+        const res = await axios.post("/auth/add-details", payload, {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        });
 
         if (res.status !== 201) throw new Error("Failed to add details");
         return true;

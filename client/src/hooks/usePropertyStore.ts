@@ -47,7 +47,7 @@ while (defaultNearby.length < 3) {
   }
 }
 
-const usePropertyStore = create<PropertyStore>((set, get, store) => {
+const usePropertyStore = create<PropertyStore>((set, get) => {
   const isFetchingLeaseRef = { current: false };
 
   return {
@@ -80,13 +80,9 @@ const usePropertyStore = create<PropertyStore>((set, get, store) => {
       const setLoading = get().setLoading;
       setLoading("addProperty", true);
       try {
-        const res = await axios.post(
-          "http://localhost:5000/property/upload",
-          formData,
-          {
-            withCredentials: true,
-          }
-        );
+        const res = await axios.post("/property/upload", formData, {
+          withCredentials: true,
+        });
 
         if (res.status !== 200) {
           throw new Error("Fail to upload property");
@@ -104,10 +100,9 @@ const usePropertyStore = create<PropertyStore>((set, get, store) => {
       const { setLoading } = get();
       setLoading("properties", true);
       try {
-        const res = await axios.get(
-          `http://localhost:5000/property/lists?page=${page}&limit=14`,
-          { withCredentials: true }
-        );
+        const res = await axios.get(`/property/lists?page=${page}&limit=14`, {
+          withCredentials: true,
+        });
         if (res.status !== 200) throw new Error("Failed to get properties");
         set({
           properties: res.data?.properties,
@@ -123,10 +118,9 @@ const usePropertyStore = create<PropertyStore>((set, get, store) => {
     getProperty: async (propertyId: string) => {
       if (!propertyId) throw new Error("Property id is not provided");
       try {
-        const res = await axios.get(
-          `http://localhost:5000/property/list?propertyId=${propertyId}`,
-          { withCredentials: true }
-        );
+        const res = await axios.get(`/property/list?propertyId=${propertyId}`, {
+          withCredentials: true,
+        });
         if (res.status !== 200) throw new Error("Failed to get property");
         set({ property: res.data?.property });
       } catch (error) {
@@ -142,10 +136,9 @@ const usePropertyStore = create<PropertyStore>((set, get, store) => {
 
       const stateOnly = userLocation.replace(/ State$/i, "").trim();
       try {
-        const res = await axios.get(
-          `http://localhost:5000/property/search?q=${stateOnly}`,
-          { withCredentials: true }
-        );
+        const res = await axios.get(`/property/search?q=${stateOnly}`, {
+          withCredentials: true,
+        });
         if (res.status !== 200) throw new Error("Fail to get nearby property");
         set((state) => ({
           nearby: [
@@ -171,10 +164,9 @@ const usePropertyStore = create<PropertyStore>((set, get, store) => {
       setLoading("search", true);
       set({ searchResult: null });
       try {
-        const res = await axios.get(
-          `http://localhost:5000/property/search?q=${search}`,
-          { withCredentials: true }
-        );
+        const res = await axios.get(`/property/search?q=${search}`, {
+          withCredentials: true,
+        });
         if (res.status !== 200) throw new Error("Fail to get nearby property");
         set({ searchResult: res.data?.results });
         return true;
@@ -188,11 +180,9 @@ const usePropertyStore = create<PropertyStore>((set, get, store) => {
 
     bookmarkProperty: async (property: PropertyType) => {
       try {
-        const res = await axios.post(
-          "http://localhost:5000/property/bookmark",
-          property,
-          { withCredentials: true }
-        );
+        const res = await axios.post("/property/bookmark", property, {
+          withCredentials: true,
+        });
         if (res.status !== 200) throw new Error("Fail to get nearby property");
         return true;
       } catch (error) {
@@ -205,10 +195,9 @@ const usePropertyStore = create<PropertyStore>((set, get, store) => {
       const { setLoading } = get();
       setLoading("bookmarks", true);
       try {
-        const res = await axios.get(
-          "http://localhost:5000/property/bookmarkeds",
-          { withCredentials: true }
-        );
+        const res = await axios.get("/property/bookmarkeds", {
+          withCredentials: true,
+        });
         if (res.status !== 200) throw new Error("Fail to get nearby property");
         set({ bookmarkedProperties: res.data?.bookmarks });
       } catch (error) {
@@ -223,7 +212,7 @@ const usePropertyStore = create<PropertyStore>((set, get, store) => {
     deleteBookMark: async (propertyId: string | undefined) => {
       try {
         const res = await axios.delete(
-          `http://localhost:5000/property/bookmark/delete?id=${propertyId}`,
+          `/property/bookmark/delete?id=${propertyId}`,
           { withCredentials: true }
         );
         if (res.status !== 200) throw new Error("Fail to get nearby property");
@@ -251,7 +240,7 @@ const usePropertyStore = create<PropertyStore>((set, get, store) => {
         state.isFetchingLeaseRef.current = true;
         set({ loadingLeaseProps: true });
         const res = await axios.get(
-          `http://localhost:5000/property/user/lease?cursor=${
+          `/property/user/lease?cursor=${
             state.leaseUserProperties.length
               ? state.leaseUserProperties[state.leaseUserProperties.length - 1]
                   .id

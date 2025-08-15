@@ -25,7 +25,11 @@ const Signup = () => {
         password: data.psw as string,
       });
       if (!res || !res.success) {
-        setError("Failed to create account. Please try again.");
+        setError(
+          typeof res === "object" && res !== null
+            ? res.message
+            : "Failed to create account. Please try again."
+        );
         return;
       }
       navigate(`/auth/otp/${res.res?.email}`);

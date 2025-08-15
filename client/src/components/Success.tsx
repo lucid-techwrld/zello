@@ -6,7 +6,7 @@ type successType = {
 };
 const Success = ({ message, subText }: successType) => {
   return (
-    <div className="min-w-screen min-h-screen absolute bg-white flex flex-col justify-center items-center gap-5 z-50">
+    <div className="fixed inset-0 bg-white bg-opacity-95 flex flex-col justify-center items-center gap-5 z-50">
       <div className="w-44 h-44 border-2">
         <img src={icon} alt="success" />
       </div>

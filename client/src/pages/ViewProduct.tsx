@@ -11,9 +11,9 @@ import {
 } from "lucide-react";
 import SellerProfile from "../components/SellerProfile";
 import Gallery from "../components/Gallery";
-import { useEffect } from "react";
 import LoadingScreen from "./LoadingScree";
 import usePropertyStore from "../hooks/usePropertyStore";
+import { useEffect } from "react";
 
 const ViewProduct = () => {
   const navigate = useNavigate();
@@ -45,19 +45,17 @@ const ViewProduct = () => {
     return <LoadingScreen />;
   }
 
+  const isBookMarked =
+    bookmarkedProperties?.some((prop) => prop?.property_id === property.id) ??
+    false;
+
   const handleBookmark = async () => {
     const result = await bookmarkProperty(property);
     if (result) {
-      console.log("Addedd to Bookmarked");
+      console.log("Added to Bookmarked");
+      await getBookMarkeds();
     }
   };
-
-  let isBookMarked: boolean = false;
-  if (bookmarkedProperties) {
-    isBookMarked =
-      bookmarkedProperties?.some((prop) => prop?.property_id === property.id) ??
-      false;
-  }
 
   console.log(isBookMarked);
   const address =

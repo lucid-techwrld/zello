@@ -115,6 +115,7 @@ function App() {
           path="/auth/forgotten-password/:email"
           element={<ForgottenPassword />}
         />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>
   );

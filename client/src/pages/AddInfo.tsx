@@ -67,7 +67,7 @@ const AddInfo = () => {
   const roleOptions = Object.values(rolesEnum);
 
   return (
-    <div className="w-full h-full p-6 max-w-xl mx-auto">
+    <div className="w-full h-full p-6 max-w-xl mx-auto relative">
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* Header */}
         <div className="flex items-center relative mb-4">

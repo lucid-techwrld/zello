@@ -5,9 +5,6 @@ import placeholderImage from "../assets/icons/placeholder.png";
 const NearYouCard = ({
   id,
   title,
-  price,
-  bedrooms,
-  bathrooms,
   city,
   state,
   street,
