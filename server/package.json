@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon server.ts",
-    "start": "node dist/server.js",
+    "start": "node build/server.js",
     "migrate:prod": "cd database && knex migrate:latest --env production --knexfile ./knexfile.ts --migrations-directory ./migrations",
     "migrate:dev": "cd database && knex migrate:latest --env development --knexfile ./knexfile.ts --migrations-directory ./migrations",
     "migrate:rollback": "cd database && knex migrate:rollback --knexfile ./knexfile.ts --migrations-directory ./migrations",
