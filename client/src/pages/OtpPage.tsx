@@ -1,4 +1,3 @@
-import axios from "axios";
 import illustrator from "../assets/icons/16180.jpg";
 import { ArrowLeft, Loader } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -6,6 +5,7 @@ import { useParams } from "react-router-dom";
 import { useState } from "react";
 import Success from "../components/Success";
 import extractAxiosErrorMessage from "../components/extractError";
+import API from "../utils/axiosInstance";
 
 const OtpPage = () => {
   const navigate = useNavigate();
@@ -24,8 +24,8 @@ const OtpPage = () => {
     const otpCode = form.otp.value;
     try {
       setLoading(true);
-      const res = await axios.post(
-        `http://localhost:5000/verify/otp`,
+      const res = await API.post(
+        `/verify/otp`,
         { email, otpCode },
         {
           headers: {

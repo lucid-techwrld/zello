@@ -1,10 +1,10 @@
-import axios from "axios";
 import illustrator from "../assets/icons/16180.jpg";
 import { ArrowLeft, Loader } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Success from "../components/Success";
 import extractAxiosErrorMessage from "../components/extractError";
+import API from "../utils/axiosInstance";
 const RequestOTP = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState<string>("");
@@ -15,8 +15,8 @@ const RequestOTP = () => {
 
     try {
       setLoading(true);
-      const res = await axios.post(
-        `http://localhost:5000/verify/request-otp`,
+      const res = await API.post(
+        `verify/request-otp`,
         { email },
         {
           headers: {

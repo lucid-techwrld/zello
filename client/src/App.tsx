@@ -24,8 +24,16 @@ import Properties from "./pages/Properties";
 import BookmarkPage from "./pages/BookMarks";
 import usePropertyStore from "./hooks/usePropertyStore";
 import useUserStore from "./hooks/useUserStore";
+import useScreenSize from "./hooks/useScreenSize";
+import NotOptimized from "./components/NotOptimized";
 
 function App() {
+  const width = useScreenSize();
+  const isBigDevice = width >= 1024;
+
+  if (isBigDevice) {
+    return <NotOptimized />;
+  }
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
   const setAuthenticated = useUserStore((state) => state.setAuthenticated);
   const fetchUserData = useUserStore((state) => state.fetchUserData);
