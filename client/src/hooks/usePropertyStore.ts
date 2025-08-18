@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import axios from "axios";
-import extractAxiosErrorMessage from "../components/extractError";
+import API from "../utils/axiosInstance";
+import extractAPIErrorMessage from "../components/extractError";
 import mockProducts from "../mockProducts";
 import type { PropertyType } from "../components/PropertyCard";
 
@@ -80,7 +80,7 @@ const usePropertyStore = create<PropertyStore>((set, get) => {
       const setLoading = get().setLoading;
       setLoading("addProperty", true);
       try {
-        const res = await axios.post("/property/upload", formData, {
+        const res = await API.post("/property/upload", formData, {
           withCredentials: true,
         });
 
@@ -89,7 +89,7 @@ const usePropertyStore = create<PropertyStore>((set, get) => {
         }
         return true;
       } catch (error) {
-        console.log(extractAxiosErrorMessage(error));
+        console.log(extractAPIErrorMessage(error));
         return false;
       } finally {
         setLoading("addProperty", false);
@@ -100,7 +100,7 @@ const usePropertyStore = create<PropertyStore>((set, get) => {
       const { setLoading } = get();
       setLoading("properties", true);
       try {
-        const res = await axios.get(`/property/lists?page=${page}&limit=14`, {
+        const res = await API.get(`/property/lists?page=${page}&limit=14`, {
           withCredentials: true,
         });
         if (res.status !== 200) throw new Error("Failed to get properties");
@@ -109,7 +109,7 @@ const usePropertyStore = create<PropertyStore>((set, get) => {
           totalPages: res.data?.pagination.totalPages,
         });
       } catch (error) {
-        console.log(extractAxiosErrorMessage(error));
+        console.log(extractAPIErrorMessage(error));
       } finally {
         setLoading("properties", false);
       }
@@ -118,13 +118,13 @@ const usePropertyStore = create<PropertyStore>((set, get) => {
     getProperty: async (propertyId: string) => {
       if (!propertyId) throw new Error("Property id is not provided");
       try {
-        const res = await axios.get(`/property/list?propertyId=${propertyId}`, {
+        const res = await API.get(`/property/list?propertyId=${propertyId}`, {
           withCredentials: true,
         });
         if (res.status !== 200) throw new Error("Failed to get property");
         set({ property: res.data?.property });
       } catch (error) {
-        console.log(extractAxiosErrorMessage(error));
+        console.log(extractAPIErrorMessage(error));
       }
     },
 
@@ -136,7 +136,7 @@ const usePropertyStore = create<PropertyStore>((set, get) => {
 
       const stateOnly = userLocation.replace(/ State$/i, "").trim();
       try {
-        const res = await axios.get(`/property/search?q=${stateOnly}`, {
+        const res = await API.get(`/property/search?q=${stateOnly}`, {
           withCredentials: true,
         });
         if (res.status !== 200) throw new Error("Fail to get nearby property");
@@ -151,7 +151,7 @@ const usePropertyStore = create<PropertyStore>((set, get) => {
         }));
         console.log("nearby properties", res.data?.results);
       } catch (error) {
-        console.log(extractAxiosErrorMessage(error));
+        console.log(extractAPIErrorMessage(error));
       } finally {
         set((state) => ({
           loading: { ...state.loading, nearby: false },
@@ -164,14 +164,14 @@ const usePropertyStore = create<PropertyStore>((set, get) => {
       setLoading("search", true);
       set({ searchResult: null });
       try {
-        const res = await axios.get(`/property/search?q=${search}`, {
+        const res = await API.get(`/property/search?q=${search}`, {
           withCredentials: true,
         });
         if (res.status !== 200) throw new Error("Fail to get nearby property");
         set({ searchResult: res.data?.results });
         return true;
       } catch (error) {
-        console.log(extractAxiosErrorMessage(error));
+        console.log(extractAPIErrorMessage(error));
         return false;
       } finally {
         setLoading("search", false);
@@ -180,13 +180,13 @@ const usePropertyStore = create<PropertyStore>((set, get) => {
 
     bookmarkProperty: async (property: PropertyType) => {
       try {
-        const res = await axios.post("/property/bookmark", property, {
+        const res = await API.post("/property/bookmark", property, {
           withCredentials: true,
         });
         if (res.status !== 200) throw new Error("Fail to get nearby property");
         return true;
       } catch (error) {
-        console.log(extractAxiosErrorMessage(error));
+        console.log(extractAPIErrorMessage(error));
         return false;
       }
     },
@@ -195,13 +195,13 @@ const usePropertyStore = create<PropertyStore>((set, get) => {
       const { setLoading } = get();
       setLoading("bookmarks", true);
       try {
-        const res = await axios.get("/property/bookmarkeds", {
+        const res = await API.get("/property/bookmarkeds", {
           withCredentials: true,
         });
         if (res.status !== 200) throw new Error("Fail to get nearby property");
         set({ bookmarkedProperties: res.data?.bookmarks });
       } catch (error) {
-        console.log(extractAxiosErrorMessage(error));
+        console.log(extractAPIErrorMessage(error));
       } finally {
         set((state) => ({
           loading: { ...state.loading, bookmarks: false },
@@ -211,7 +211,7 @@ const usePropertyStore = create<PropertyStore>((set, get) => {
 
     deleteBookMark: async (propertyId: string | undefined) => {
       try {
-        const res = await axios.delete(
+        const res = await API.delete(
           `/property/bookmark/delete?id=${propertyId}`,
           { withCredentials: true }
         );
@@ -224,7 +224,7 @@ const usePropertyStore = create<PropertyStore>((set, get) => {
             : null,
         }));
       } catch (error) {
-        console.log(extractAxiosErrorMessage(error));
+        console.log(extractAPIErrorMessage(error));
       }
     },
 
@@ -239,7 +239,7 @@ const usePropertyStore = create<PropertyStore>((set, get) => {
       try {
         state.isFetchingLeaseRef.current = true;
         set({ loadingLeaseProps: true });
-        const res = await axios.get(
+        const res = await API.get(
           `/property/user/lease?cursor=${
             state.leaseUserProperties.length
               ? state.leaseUserProperties[state.leaseUserProperties.length - 1]
@@ -261,7 +261,7 @@ const usePropertyStore = create<PropertyStore>((set, get) => {
           hasMore: !!nextCursor,
         }));
       } catch (error) {
-        console.log(extractAxiosErrorMessage(error));
+        console.log(extractAPIErrorMessage(error));
       } finally {
         state.isFetchingLeaseRef.current = false;
         set({ loadingLeaseProps: false });

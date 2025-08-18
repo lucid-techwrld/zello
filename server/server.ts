@@ -18,6 +18,7 @@ const whiteList = [
   "http://localhost:5173",
   "http://localhost:5000",
   "https://zello-home.onrender.com",
+  "https://zello-property.onrender.com",
 ];
 const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
@@ -32,20 +33,13 @@ const corsOptions: CorsOptions = {
   allowedHeaders: ["Content-Type", "Authorization"],
 };
 
-const FRONTEND_PATH = path.resolve(__dirname, "../client/dist");
-console.log("Serving frontend from:", FRONTEND_PATH);
 app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(FRONTEND_PATH));
 
 app.use("/auth", authRoute);
 app.use("/verify", verifyRoute);
 app.use("/property", propertyRoute);
 app.use("/user", userRouter);
-
-app.get("/", (req, res) => {
-  res.sendFile(path.join(FRONTEND_PATH, "index.html"));
-});
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {

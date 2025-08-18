@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import axios from "axios";
-import extractAxiosErrorMessage from "../components/extractError";
+import API from "../utils/axiosInstance";
+import extractAPIErrorMessage from "../components/extractError";
 
 interface LoadingState {
   SignUp: boolean;
@@ -83,7 +83,7 @@ const useUserStore = create<UserStore>((set, get) => {
       const fetchUserData = get().fetchUserData;
       setLoading("SignIn", true);
       try {
-        const res = await axios.post("/auth/login", payload, {
+        const res = await API.post("/auth/login", payload, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -102,7 +102,7 @@ const useUserStore = create<UserStore>((set, get) => {
         return true;
       } catch (error) {
         console.log(error);
-        const message = extractAxiosErrorMessage(error);
+        const message = extractAPIErrorMessage(error);
         console.log("Login Error", message);
         return false;
       } finally {
@@ -112,7 +112,7 @@ const useUserStore = create<UserStore>((set, get) => {
 
     logOut: async (): Promise<boolean> => {
       try {
-        const res = await axios.get("/auth/logout", {
+        const res = await API.get("/auth/logout", {
           withCredentials: true,
         });
 
@@ -127,7 +127,7 @@ const useUserStore = create<UserStore>((set, get) => {
         }));
         return true;
       } catch (error) {
-        const message = extractAxiosErrorMessage(error);
+        const message = extractAPIErrorMessage(error);
         console.log(message);
         return false;
       }
@@ -139,7 +139,7 @@ const useUserStore = create<UserStore>((set, get) => {
       const setLoading = get().setLoading;
       setLoading("SignUp", true);
       try {
-        const res = await axios.post("/auth/register", payload, {
+        const res = await API.post("/auth/register", payload, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -153,7 +153,7 @@ const useUserStore = create<UserStore>((set, get) => {
         console.log("User created successfully:", res.data);
         return { res: res.data, success: true, message: res.data.message };
       } catch (error) {
-        const message = extractAxiosErrorMessage(error);
+        const message = extractAPIErrorMessage(error);
         console.log("Signup Error:", message);
         return { res: null, success: false, message };
       } finally {
@@ -166,7 +166,7 @@ const useUserStore = create<UserStore>((set, get) => {
       setLoading("UserData", true);
 
       try {
-        const res = await axios.get("/user/profile", {
+        const res = await API.get("/user/profile", {
           headers: {
             "Content-Type": "application/json",
           },
@@ -187,7 +187,7 @@ const useUserStore = create<UserStore>((set, get) => {
         });
         return false;
       } catch (error) {
-        const message = extractAxiosErrorMessage(error);
+        const message = extractAPIErrorMessage(error);
         console.log("Fetch user error", message);
         set({
           User: null,
@@ -207,7 +207,7 @@ const useUserStore = create<UserStore>((set, get) => {
       setLoading("UpdateUser", true);
       console.log("Updating user details", userDetails);
       try {
-        const res = await axios.patch("/user/update-info", userDetails, {
+        const res = await API.patch("/user/update-info", userDetails, {
           withCredentials: true,
         });
 
@@ -219,7 +219,7 @@ const useUserStore = create<UserStore>((set, get) => {
         await fetchUserData();
         return true;
       } catch (error) {
-        const message = extractAxiosErrorMessage(error);
+        const message = extractAPIErrorMessage(error);
         console.log("Update user details error", message);
         return false;
       } finally {
@@ -231,7 +231,7 @@ const useUserStore = create<UserStore>((set, get) => {
       const setLoading = get().setLoading;
       setLoading("UserDetails", true);
       try {
-        const res = await axios.post("/auth/add-details", payload, {
+        const res = await API.post("/auth/add-details", payload, {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
@@ -239,7 +239,7 @@ const useUserStore = create<UserStore>((set, get) => {
         if (res.status !== 201) throw new Error("Failed to add details");
         return true;
       } catch (error) {
-        const message = extractAxiosErrorMessage(error);
+        const message = extractAPIErrorMessage(error);
         console.log("Add user details error", message);
         return false;
       } finally {
