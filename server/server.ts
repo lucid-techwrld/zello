@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
-import path from "path";
+import path, { dirname } from "path";
 import authRoute from "./routes/auth_route";
 import verifyRoute from "./routes/verification_routes";
 import propertyRoute from "./routes/property_route";
@@ -32,7 +32,7 @@ const corsOptions: CorsOptions = {
   allowedHeaders: ["Content-Type", "Authorization"],
 };
 
-const FRONTEND_PATH = path.resolve(process.cwd(), "client/dist");
+const FRONTEND_PATH = path.resolve(__dirname, "../client/dist");
 console.log("Serving frontend from:", FRONTEND_PATH);
 app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: true }));
