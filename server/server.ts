@@ -32,8 +32,8 @@ const corsOptions: CorsOptions = {
   allowedHeaders: ["Content-Type", "Authorization"],
 };
 
-const FRONTEND_PATH = path.join(__dirname, "../client/dist");
-console.log("Frontend path:", path.join(FRONTEND_PATH, "index.html"));
+const FRONTEND_PATH = path.join(process.cwd(), "client/dist");
+console.log("Serving frontend from:", FRONTEND_PATH);
 app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(FRONTEND_PATH));
