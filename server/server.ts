@@ -32,9 +32,11 @@ const corsOptions: CorsOptions = {
   allowedHeaders: ["Content-Type", "Authorization"],
 };
 
+const FRONTEND_PATH = path.join(__dirname, "./../client/dist");
+//console.log("Frontend path:", path.join(FRONTEND_PATH, "index.html"));
 app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "../client/dist")));
+app.use(express.static(FRONTEND_PATH));
 
 app.use("/auth", authRoute);
 app.use("/verify", verifyRoute);
@@ -42,8 +44,9 @@ app.use("/property", propertyRoute);
 app.use("/user", userRouter);
 
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/dist", "index.html"));
+  res.sendFile(path.join(FRONTEND_PATH, "index.html"));
 });
+
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
   console.log("Server is running on PORT", port);

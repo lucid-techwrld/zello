@@ -16,7 +16,11 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const app = (0, express_1.default)();
 app.use((0, cookie_parser_1.default)());
 app.use(express_1.default.json());
-const whiteList = ["http://localhost:5173", "http://localhost:5000"];
+const whiteList = [
+    "http://localhost:5173",
+    "http://localhost:5000",
+    "https://zello-home.onrender.com",
+];
 const corsOptions = {
     origin: (origin, callback) => {
         if (!origin || whiteList.includes(origin)) {
@@ -32,13 +36,13 @@ const corsOptions = {
 };
 app.use((0, cors_1.default)(corsOptions));
 app.use(express_1.default.urlencoded({ extended: true }));
-app.use(express_1.default.static(path_1.default.join(__dirname, "../client/dist")));
+app.use(express_1.default.static(path_1.default.join(__dirname, "../../client/dist")));
 app.use("/auth", auth_route_1.default);
 app.use("/verify", verification_routes_1.default);
 app.use("/property", property_route_1.default);
 app.use("/user", user_route_1.default);
 app.get("/", (req, res) => {
-    res.sendFile(path_1.default.join(__dirname, "../client/dist", "index.html"));
+    res.sendFile(path_1.default.join(__dirname, "../../client/dist", "index.html"));
 });
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
