@@ -32,14 +32,20 @@ const corsOptions: CorsOptions = {
   methods: ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
-
+const frontendPath = path.join(__dirname, "./dist");
+console.log("Frontend path:", path.join(frontendPath, "index.html"));
 app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(frontendPath));
 
 app.use("/auth", authRoute);
 app.use("/verify", verifyRoute);
 app.use("/property", propertyRoute);
 app.use("/user", userRouter);
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(frontendPath, "index.html"));
+});
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {

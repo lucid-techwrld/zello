@@ -178,6 +178,7 @@ const useUserStore = create<UserStore>((set, get) => {
             User: res.data.profile,
             isAuthenticated: true,
           });
+          console.log("User data fetched successfully:", res.data.profile);
           return true;
         }
 

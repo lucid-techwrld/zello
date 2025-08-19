@@ -35,6 +35,7 @@ const getProfile = async (req: CustomRequest, res: Response) => {
         "users.id",
         "users.email",
         "users.avatar",
+        "users.isVerified",
         "user_info.first_name",
         "user_info.last_name",
         "user_info.role",
