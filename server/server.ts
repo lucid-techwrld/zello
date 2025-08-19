@@ -32,7 +32,7 @@ const corsOptions: CorsOptions = {
   methods: ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
-const frontendPath = path.join(__dirname, "./dist");
+const frontendPath = path.join(__dirname, "../dist");
 console.log("Frontend path:", path.join(frontendPath, "index.html"));
 app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: true }));
