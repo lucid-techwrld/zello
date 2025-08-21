@@ -16,6 +16,9 @@ export type PropertyType = {
   images: string[];
   onRemove?: () => void;
   property_id?: string;
+  first_name?: string;
+  last_name?: string;
+  user_id?: string;
 };
 
 const PropertyCard = ({

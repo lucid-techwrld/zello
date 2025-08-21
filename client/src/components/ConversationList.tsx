@@ -14,8 +14,7 @@ export default function ConversationList({ client }: Props) {
   useEffect(() => {
     const fetchChannels = async () => {
       const filter = { type: "messaging", members: { $in: [client.userID!] } };
-      const sort = { last_message_at: "desc" as const };
-      //@ts-expect-error
+      const sort = { last_message_at: -1 as const };
       const chan = await client.queryChannels(filter, sort, {
         watch: true,
         state: true,

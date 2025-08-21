@@ -87,7 +87,12 @@ const getProperty = async (req: CustomerGetPropertyRequest, res: Response) => {
       }
     }
 
-    const property = await db("properties").where({ id: propId }).first();
+    const property = await db("properties")
+      .join("user_info", "properties.user_id", "user_info.user_id")
+      .where("properties.id", propId)
+      .select("properties.*", "user_info.first_name", "user_info.last_name")
+      .first();
+
     if (!property) {
       return res
         .status(404)

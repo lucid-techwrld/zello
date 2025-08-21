@@ -123,6 +123,7 @@ const usePropertyStore = create<PropertyStore>((set, get) => {
         });
         if (res.status !== 200) throw new Error("Failed to get property");
         set({ property: res.data?.property });
+        console.log(res.data);
       } catch (error) {
         console.log(extractAPIErrorMessage(error));
       }

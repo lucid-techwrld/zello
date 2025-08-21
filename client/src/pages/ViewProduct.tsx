@@ -113,7 +113,11 @@ const ViewProduct = () => {
         <p className="text-md  text-gray-600">{property?.description}</p>
       </div>
 
-      <SellerProfile />
+      <SellerProfile
+        userId={property?.user_id!}
+        firstName={property?.first_name!}
+        lastName={property?.last_name!}
+      />
 
       <Gallery images={property?.images} />
 
