@@ -8,7 +8,7 @@ import propertyRoute from "./routes/property_route";
 import userRouter from "./routes/user_route";
 import cors, { CorsOptions } from "cors";
 import cookieParser from "cookie-parser";
-
+import streamRoute from "./routes/stream_route";
 const app = express();
 
 app.use(cookieParser());
@@ -42,6 +42,7 @@ app.use("/auth", authRoute);
 app.use("/verify", verifyRoute);
 app.use("/property", propertyRoute);
 app.use("/user", userRouter);
+app.use("/stream", streamRoute);
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(frontendPath, "index.html"));

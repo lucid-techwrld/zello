@@ -2,7 +2,7 @@ import db from "../database/database";
 import bcrypt from "bcryptjs";
 import generateOTP from "../helpers/generakeOTP";
 import sendOTP from "../helpers/sendOTP";
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 
 interface CustomUserRequest extends Request {
   body: {
@@ -12,7 +12,11 @@ interface CustomUserRequest extends Request {
   };
 }
 
-const createUser = async (req: CustomUserRequest, res: Response) => {
+const createUser = async (
+  req: CustomUserRequest,
+  res: Response,
+  next: NextFunction
+) => {
   const { email, password } = req.body;
   if (!email || !password) {
     res.status(400).json({ error: "Email and password are required" });
@@ -22,6 +26,7 @@ const createUser = async (req: CustomUserRequest, res: Response) => {
     const existingUser = await db("users").where({ email }).first();
     if (existingUser) {
       res.status(409).json({ message: "User already exists" });
+      return;
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -36,13 +41,21 @@ const createUser = async (req: CustomUserRequest, res: Response) => {
 
     const generatedOTP = (await generateOTP(user.email)) as string;
     await sendOTP(user.email, generatedOTP);
+    res.locals.user = {
+      id: user.id,
+      name:
+        `${user?.first_name ?? ""} ${user?.last_name ?? ""}`.trim() ||
+        user.email,
+    };
     res.status(201).json({
       id: user.id,
       email: user.email,
       avatar: user.avatar,
       message: `OTP sent succesfully to ${user.email}. Check inbox`,
     });
+    next();
   } catch (error) {
+    console.error("Error creating user:", error);
     res.status(500).json({ error: "Internal Server Error" });
     return;
   }

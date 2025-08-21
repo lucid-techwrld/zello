@@ -26,6 +26,8 @@ import usePropertyStore from "./hooks/usePropertyStore";
 import useUserStore from "./hooks/useUserStore";
 import useScreenSize from "./hooks/useScreenSize";
 import NotOptimized from "./components/NotOptimized";
+import Messages from "./pages/messages";
+import ChatUI from "./components/ChatUI";
 
 function App() {
   const width = useScreenSize();
@@ -83,7 +85,7 @@ function App() {
           />
 
           <Route path="/nearby" element={<NearyBy />} />
-          <Route path="/messages" element={<div>Messages</div>} />
+
           <Route path="/bookmarks" element={<BookmarkPage />} />
           <Route path="/search/:search" element={<SearchResult />} />
           <Route path="/faq" element={<FAQ />} />
@@ -110,6 +112,8 @@ function App() {
           <Route path="/profile/view" element={<ViewProfile />} />
         </Route>
 
+        <Route path="/messages" element={<Messages />} />
+        <Route path="/chat/:id" element={<ChatUI />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/view/:id" element={<ViewProduct />} />
 
