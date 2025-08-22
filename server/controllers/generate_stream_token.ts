@@ -10,7 +10,7 @@ interface CustomRequest extends Request {
 }
 
 const generateStreamToken = (req: CustomRequest, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.id?.toLowerCase();
   if (!userId) {
     return res.status(400).json({ error: "User ID is required" });
   }

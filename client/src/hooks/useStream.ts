@@ -6,7 +6,11 @@ import useUserStore from "./useUserStore";
 
 interface StreamStore {
   initializeClient: (client: StreamChat) => Promise<void>;
-  initializeChat: (client: StreamChat, channelId: string) => Promise<void>;
+  initializeChat: (
+    client: StreamChat,
+    userId: string,
+    otherUserId: string
+  ) => Promise<void>;
   channel: Channel | null;
   setChannel: (channel: Channel | null) => void;
 }
@@ -15,7 +19,6 @@ const useStream = create<StreamStore>((set, get) => ({
   channel: null,
   setChannel: (channel: Channel | null) => set({ channel }),
 
-  // Connect user only once
   initializeClient: async (client: StreamChat) => {
     const user = useUserStore.getState().User;
     if (!user) {
@@ -31,7 +34,7 @@ const useStream = create<StreamStore>((set, get) => ({
       if (!client.userID) {
         await client.connectUser(
           {
-            id: user.id.toString(),
+            id: user.id.toLowerCase(), // ✅ always lowercase
             name: `${user.first_name} ${user.last_name}`,
           },
           token
@@ -45,10 +48,16 @@ const useStream = create<StreamStore>((set, get) => ({
     }
   },
 
-  // Join existing channel or watch it
-  initializeChat: async (client: StreamChat, channelId: string) => {
+  initializeChat: async (
+    client: StreamChat,
+    userId: string,
+    otherUserId: string
+  ) => {
     try {
-      const channel = client.channel("messaging", channelId);
+      const channel = client.channel("messaging", {
+        members: [userId.toLowerCase(), otherUserId.toLowerCase()], // ✅ both lowercase
+      });
+
       await channel.watch();
       get().setChannel(channel);
     } catch (error) {

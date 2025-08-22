@@ -25,29 +25,27 @@ const ChatUI = () => {
   const channel = useStream((state) => state.channel);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!user || !id) return;
-
-    const streamClient = StreamChat.getInstance(
-      import.meta.env.VITE_STREAM_API_KEY
-    );
-
-    initializeClient(streamClient).then(() => {
-      initializeChat(streamClient, id).then(() => {
-        setClient(streamClient);
-      });
-    });
-
-    return () => {
-      if (streamClient.userID) {
-        streamClient
-          .disconnectUser()
-          .catch((err) =>
-            console.warn("Error disconnecting Stream user:", err)
-          );
-      }
-    };
-  }, [id, user, initializeClient, initializeChat]);
+ useEffect(() => {
+   if (!user || !id) return;
+ 
+   const streamClient = StreamChat.getInstance(
+     import.meta.env.VITE_STREAM_API_KEY
+   );
+ 
+   const setupChat = async () => {
+     await initializeClient(streamClient);
+ 
+     
+     await initializeChat(streamClient, user.id, id);
+ 
+     setClient(streamClient);
+   };
+ 
+   setupChat();
+ 
+   return () => {};
+ }, [id, user, initializeClient, initializeChat]);
+ 
 
   if (!user) return <LoadingScreen />;
   if (!client) return <LoadingScreen />;

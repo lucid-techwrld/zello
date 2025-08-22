@@ -1,4 +1,3 @@
-// middlewares/createStreamUser.ts
 import { Request, Response, NextFunction } from "express";
 import { StreamChat } from "stream-chat";
 
@@ -24,7 +23,7 @@ export const createStreamUser = async (
     }
 
     await serverClient.upsertUser({
-      id: id.toString(),
+      id: id.toLowerCase(),
       name,
     });
 
