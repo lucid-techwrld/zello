@@ -38,7 +38,11 @@ export default function ConversationList({ client }: Props) {
         return (
           <button
             key={channel.id}
-            onClick={() => navigate(`/chat/${channel.id}`)}
+            onClick={() => {
+              if (otherMember?.id) {
+                navigate(`/chat/${otherMember.id}`);
+              }
+            }}
             className="flex items-center p-3 hover:bg-gray-100 text-left"
           >
             {/* Avatar */}
