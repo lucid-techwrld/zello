@@ -53,7 +53,7 @@ const Messages = () => {
       <input
         type="text"
         placeholder="Search messages..."
-        className="w-full p-2 border rounded mb-2"
+        className="w-full p-2 border rounded-md mt-3 mb-2 bg-white"
       />
 
       <ConversationList client={client} />

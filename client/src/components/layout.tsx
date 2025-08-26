@@ -11,7 +11,7 @@ const Layout = () => {
     setIsMenuOpen((prevState) => !prevState);
   };
   return (
-    <div className="w-full h-full ">
+    <div className="w-full h-full bg-white ">
       <NavBar isMenuOpen={isMenuOpen} handleMenu={handleMenu} />
       <Header handleMenu={handleMenu} />
 

@@ -3,11 +3,15 @@ import googleIcon from "../assets/icons/google logo.png";
 import logo from "../assets/icons/zello logo.png";
 import { useNavigate } from "react-router-dom";
 import useUserStore from "../hooks/useUserStore";
+import { UserSchema } from "../utils/zod";
+import { useState } from "react";
+import ErrorMessages from "../components/ErrorMessages";
 
 const Login = () => {
   const navigate = useNavigate();
   const login = useUserStore((state) => state.login);
   const loading = useUserStore((state) => state.loading.SignIn);
+  const [errors, setErrors] = useState<string[]>([]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,18 +20,45 @@ const Login = () => {
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
 
-    const success = await login({
+    const result = UserSchema.safeParse({
+      email: data.email as string,
+      password: data.password as string,
+    });
+    if (!result.success) {
+      setErrors(result.error.issues.map((err) => err.message));
+
+      setTimeout(() => {
+        setErrors([]);
+      }, 3000);
+      return;
+    }
+    setErrors([]);
+
+    const res = await login({
       email: data.email as string,
       password: data.password as string,
     });
 
-    if (success) navigate("/");
+    if (!res || !res.success) {
+      const message =
+        typeof res === "object" && res !== null
+          ? res.message
+          : "Failed to create account. Please try again.";
+      setErrors([message]);
+      setTimeout(() => {
+        setErrors([]);
+      }, 3000);
+      return;
+    }
+    if (res.success) navigate("/");
+
     form.reset();
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 space-y-6">
+      <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 space-y-6 relative">
+        <ErrorMessages messages={errors} />
         <div className="flex justify-center">
           <img
             src={logo}
@@ -47,7 +78,7 @@ const Login = () => {
               name="email"
               placeholder="Email"
               required
-              className="w-full h-12 px-4 pr-10 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full h-12 px-4 pr-10 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
             />
             <MailIcon className="absolute right-3 top-3 w-5 h-5 text-gray-500" />
           </div>
@@ -58,7 +89,7 @@ const Login = () => {
               name="password"
               placeholder="Password"
               required
-              className="w-full h-12 px-4 pr-10 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full h-12 px-4 pr-10 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
             />
             <KeySquareIcon className="absolute right-3 top-3 w-5 h-5 text-gray-500" />
           </div>

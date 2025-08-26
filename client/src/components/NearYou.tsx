@@ -1,12 +1,17 @@
 import NearYouCard from "./NearYouCard";
 import { useNavigate } from "react-router-dom";
 import usePropertyStore from "../hooks/usePropertyStore";
+import type { PropertyType } from "./PropertyCard";
 
 const NearYou = () => {
   const navigate = useNavigate();
   const nearby = usePropertyStore((state) => state.nearby);
-
-  console.log("nearby tsx", nearby);
+  let previewNearby: PropertyType[] = [];
+  if (nearby && nearby.length > 3) {
+    previewNearby = nearby.slice(0, 3);
+    console.log(previewNearby);
+  }
+  console.log("nearby tsx");
   return (
     <div className="p-3 w-full h-auto">
       <div className="flex justify-between">
@@ -20,7 +25,7 @@ const NearYou = () => {
       </div>
 
       <div className="flex flex-row overflow-x-auto gap-x-5">
-        {nearby?.map((property) => (
+        {previewNearby?.map((property) => (
           <NearYouCard
             key={property.id}
             id={property.id}

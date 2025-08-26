@@ -12,7 +12,7 @@ const Notifications = () => {
         <Bell size={25} />
       </div>
 
-      <div className="w-full h-full mt-16 p-3">
+      <div className="w-full h-full pt-11 p-3">
         <NotificationCard
           msg="A new property matching your preference is now available in 'Lekki, Phase 2', Check it out before it's gone."
           time="1d"

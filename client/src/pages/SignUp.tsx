@@ -2,49 +2,64 @@ import { KeySquareIcon, MailIcon, Loader } from "lucide-react";
 import logo from "../assets/icons/zello logo.png";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import extractAxiosErrorMessage from "../components/extractError";
 import useUserStore from "../hooks/useUserStore";
+import { UserSchema } from "../utils/zod";
+import ErrorMessages from "../components/ErrorMessages";
 
 const Signup = () => {
   const navigate = useNavigate();
-  const [error, setError] = useState<string | null>(null);
   const createUser = useUserStore((state) => state.createUser);
   const loading = useUserStore((state) => state.loading.SignUp);
+  const [error, setErrors] = useState<string[]>([]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
 
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
 
-    try {
-      const res = await createUser({
-        email: data.email as string,
-        password: data.psw as string,
-      });
-      if (!res || !res.success) {
-        setError(
-          typeof res === "object" && res !== null
-            ? res.message
-            : "Failed to create account. Please try again."
-        );
-        return;
-      }
-      navigate(`/auth/otp/${res.res?.email}`);
-    } catch (err) {
-      const message =
-        extractAxiosErrorMessage(err) || "An error occurred. Please try again.";
-      setError(message);
-      console.log("Signup Error:", message);
-    } finally {
-      form.reset();
+    const result = UserSchema.safeParse({
+      email: data.email as string,
+      password: data.psw as string,
+    });
+    if (!result.success) {
+      console.log(result);
+      setErrors(result.error.issues.map((err) => err.message));
+
+      setTimeout(() => {
+        setErrors([]);
+      }, 3000);
+      return;
     }
+    setErrors([]);
+
+    const res = await createUser({
+      email: data.email as string,
+      password: data.psw as string,
+    });
+    if (!res || !res.success) {
+      const message =
+        typeof res === "object" && res !== null
+          ? res.message
+          : "Failed to create account. Please try again.";
+      console.log("1", message);
+      setErrors([message]);
+
+      form.reset();
+      setTimeout(() => {
+        setErrors([]);
+      }, 3000);
+      return;
+    }
+    navigate(`/auth/otp/${res.res?.email}`);
+
+    form.reset();
   };
 
   return (
     <div className="w-full min-h-screen flex flex-col justify-center items-center bg-gray-100">
+      <ErrorMessages messages={error} />
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 space-y-6"
@@ -53,13 +68,9 @@ const Signup = () => {
           <img src={logo} alt="zello logo" className="w-44 h-44" />
         </div>
 
-        <h1 className="text-center text-3xl font-bold mt-4">Sign Up</h1>
-
-        {error && (
-          <p className="text-red-500 text-center text-sm bg-red-100 px-4 py-2 rounded-md">
-            {error}
-          </p>
-        )}
+        <h1 className="text-center text-3xl font-bold mt-4 text-black">
+          Sign Up
+        </h1>
 
         <div className="relative">
           <input
@@ -68,7 +79,7 @@ const Signup = () => {
             required
             placeholder="Email"
             autoComplete="email"
-            className="w-full h-12 bg-gray-100 rounded-md pl-4 pr-10 outline-blue-500"
+            className="w-full h-12 bg-gray-100 rounded-md pl-4 pr-10 outline-blue-500 text-black"
           />
           <MailIcon className="absolute top-3 right-3 w-5 h-5 text-gray-500" />
         </div>
@@ -80,7 +91,7 @@ const Signup = () => {
             required
             placeholder="Password"
             autoComplete="new-password"
-            className="w-full h-12 bg-gray-100 rounded-md pl-4 pr-10 outline-blue-500"
+            className="w-full h-12 bg-gray-100 rounded-md pl-4 pr-10 outline-blue-500 text-black"
           />
           <KeySquareIcon className="absolute top-3 right-3 w-5 h-5 text-gray-500" />
         </div>

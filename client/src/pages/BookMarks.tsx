@@ -17,7 +17,7 @@ const BookmarkPage = () => {
 
   if (!bookmarkedProperties || bookmarkedProperties.length === 0) {
     return (
-      <div className="w-full text-center mt-20 text-gray-500 flex flex-col justify-center items-center">
+      <div className="w-full text-center pt-11 text-gray-500 flex flex-col justify-center items-center">
         <p className="text-lg">You haven’t bookmarked any properties yet.</p>
         <p className="text-sm mt-2">
           Tap the <Bookmark className="w-5 h-5" /> icon on a property to save it

@@ -17,7 +17,9 @@ interface UserStore {
   setAuthenticated: (value: boolean) => void;
   fetchUserData: () => Promise<boolean>;
   logOut: () => Promise<boolean>;
-  login: (payload: UserCredential) => Promise<boolean>;
+  login: (
+    payload: UserCredential
+  ) => Promise<{ res: any; success: boolean; message: string } | false>;
   updateUserDetails: (userDetails: Partial<UserData>) => Promise<boolean>;
   createUser: (
     payload: UserCredential
@@ -78,7 +80,9 @@ const useUserStore = create<UserStore>((set, get) => {
       set({ isAuthenticated: value });
     },
 
-    login: async (payload: UserCredential): Promise<boolean> => {
+    login: async (
+      payload: UserCredential
+    ): Promise<{ res: any; success: boolean; message: string } | false> => {
       const setLoading = get().setLoading;
       const fetchUserData = get().fetchUserData;
       setLoading("SignIn", true);
@@ -99,12 +103,12 @@ const useUserStore = create<UserStore>((set, get) => {
         set(() => ({
           isAuthenticated: true,
         }));
-        return true;
+        return { res: res.data, success: true, message: res.data?.message };
       } catch (error) {
         console.log(error);
         const message = extractAPIErrorMessage(error);
         console.log("Login Error", message);
-        return false;
+        return { res: null, success: false, message };
       } finally {
         setLoading("SignIn", false);
       }

@@ -72,7 +72,7 @@ function App() {
   if (!initialized) return <LoadingScreen />;
 
   return (
-    <div className="min-h-screen w-full">
+    <div className="min-h-screen w-full bg-white text-black">
       <Routes>
         <Route element={<Layout />}>
           <Route
