@@ -66,18 +66,20 @@ const Search = () => {
     <div className="p-3 w-full h-auto flex flex-col gap-2">
       <div className="w-full flex gap-2 items-center">
         <form className="flex-grow relative" onSubmit={handleSearchSubmit}>
-          <input
-            type="text"
-            name="search"
-            id="search"
-            className="bg-gray-200 w-full h-10 rounded-md pl-10  border-none outline-none placeholder:text-sm"
-            placeholder="Search address or near you"
-          />
-          <SearchIcon className="absolute top-2 left-3" />
+          <div className="flex justify-center items-center">
+            <input
+              type="text"
+              name="search"
+              id="search"
+              className="bg-gray-200 w-full h-10 lg:h-16  rounded-md pl-10  border-none outline-none placeholder:text-sm"
+              placeholder="Search address or near you"
+            />
+            <SearchIcon className="absolute left-3" />
+          </div>
         </form>
 
         {/*Filter*/}
-        <div className="w-10 h-10 gradient flex justify-center items-center text-white">
+        <div className="w-10 h-10 lg:h-14 lg:w-14 gradient flex justify-center items-center text-white z-10">
           <SlidersHorizontal className="w-5 h-5" />
         </div>
       </div>
@@ -86,9 +88,9 @@ const Search = () => {
       <ul className="flex gap-4 overflow-scroll">
         {filterList.map((item, index) => (
           <li
-            className={`px-4 py-2 whitespace-nowrap ${
+            className={`px-4 py-2 lg:px-6 lg:py-4 whitespace-nowrap ${
               selectedItems === slugify(item)
-                ? "gradient text-white "
+                ? "gradient text-white"
                 : "bg-gray-100 rounded-md text-gray-600"
             }`}
             key={index}

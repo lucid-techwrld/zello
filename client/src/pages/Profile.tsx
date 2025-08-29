@@ -10,7 +10,7 @@ const Profile = () => {
   const navigate = useNavigate();
   //console.log(User);
   return (
-    <div className="profile">
+    <div className="profile ">
       <h1 className="text-xl font-bold">Profile</h1>
       {/* profile card */}
       <div className="profile-card">

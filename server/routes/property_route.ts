@@ -15,10 +15,17 @@ import {
   deleteBookMark,
   getBookMarks,
 } from "../controllers/add_to_bookmark";
+import geocodeAddress from "../middlewares/create_lat_long";
 
 const router = express.Router();
 
-router.post("/upload", verifyUser, upload.array("images"), addProperty);
+router.post(
+  "/upload",
+  verifyUser,
+  upload.array("images"),
+  geocodeAddress,
+  addProperty
+);
 router.get("/list", getProperty);
 router.get("/search", searchProperties);
 router.get("/lists", getProperties);

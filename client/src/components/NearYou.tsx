@@ -8,7 +8,7 @@ const NearYou = () => {
   const nearby = usePropertyStore((state) => state.nearby);
   let previewNearby: PropertyType[] = [];
   if (nearby && nearby.length > 3) {
-    previewNearby = nearby.slice(0, 3);
+    previewNearby = nearby.slice(0, 4);
     console.log(previewNearby);
   }
   console.log("nearby tsx");

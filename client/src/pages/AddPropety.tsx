@@ -54,20 +54,20 @@ export default function ListProperty() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium mb-1">
+          <label className="block text-sm md:text-lg  font-medium mb-1">
             Property Title
           </label>
           <input
             name="title"
             type="text"
             placeholder="e.g. Cozy Apartment in Lekki"
-            className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">
+          <label className="block text-sm md:text-lg font-medium mb-1">
             Property Type
           </label>
           <select
@@ -100,85 +100,107 @@ export default function ListProperty() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Price (₦)</label>
+          <label className="block text-sm md:text-lg  font-medium mb-1">
+            Price (₦)
+          </label>
           <input
             name="price"
             type="number"
             placeholder="e.g. 150000"
-            className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">
+          <label className="block text-sm md:text-lg  font-medium mb-1">
             Number of Bedrooms
           </label>
           <input
             name="bedrooms"
             type="number"
-            className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">
+          <label className="block text-sm md:text-lg  font-medium mb-1">
             Number of Bathrooms
           </label>
           <input
             name="bathrooms"
             type="number"
-            className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           />
         </div>
       </div>
 
       {/* Description */}
-      <div className="mt-6">
-        <label className="block text-sm font-medium mb-1">
+      <div className="mt-6 relative">
+        <label className="block text-sm md:text-lg  font-medium mb-1">
           Property Description
         </label>
         <textarea
           name="description"
           rows={4}
           placeholder="Describe your property..."
-          className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white max-h-52 min-h-44"
         />
+        <button title="Generate a description with AI" className="generateai">
+          <span>✨ Generate</span>
+        </button>
       </div>
 
       {/* Location */}
       <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium mb-1">
+          <label className="block text-sm md:text-lg  font-medium mb-1">
             Street Address
           </label>
           <input
             name="street"
             type="text"
-            className="w-full px-4 py-2 border rounded-xl"
+            className="w-full px-4 py-2 border rounded-xl bg-white"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">City</label>
+          <label className="block text-sm md:text-lg  font-medium mb-1">
+            City
+          </label>
           <input
             name="city"
             type="text"
-            className="w-full px-4 py-2 border rounded-xl"
+            className="w-full px-4 py-2 border rounded-xl bg-white"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">State</label>
+          <label className="block text-sm md:text-lg  font-medium mb-1 bg-white">
+            State
+          </label>
           <input
             name="state"
             type="text"
-            className="w-full px-4 py-2 border rounded-xl"
+            className="w-full px-4 py-2 border rounded-xl bg-white"
+          />
+        </div>
+        <div>
+          <label className="block text-sm md:text-lg  font-medium mb-1 bg-white">
+            Country
+          </label>
+          <input
+            name="country"
+            type="text"
+            defaultValue={"Nigeria"}
+            className="w-full px-4 py-2 border rounded-xl bg-white"
           />
         </div>
       </div>
 
       {/* Image Upload */}
       <div className="mt-6">
-        <label className="block text-sm font-medium mb-1">Upload Images</label>
+        <label className="block text-sm md:text-lg  font-medium mb-1">
+          Upload Images
+        </label>
         <input
           type="file"
           name="images"

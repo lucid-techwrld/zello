@@ -19,7 +19,7 @@ const RecommendCard = ({
   const mainImage = images?.[0] || placeholderImage;
   return (
     <div
-      className="w-full h-28 flex gap-2 bg-white rounded-md shadow-md overflow-hidden"
+      className="w-full h-28 lg:h-44 flex gap-2 bg-white rounded-md shadow-md overflow-hidden"
       onClick={() => navigate(`/view/${id}`)}
     >
       <div className="w-[30%] h-full rounded-md p-2 flex items-center">
@@ -32,8 +32,8 @@ const RecommendCard = ({
       </div>
 
       <div className="flex flex-col justify-between p-2 w-[70%] overflow-hidden">
-        <p className="font-bold text-base truncate">{title}</p>
-        <p className="text-blue-500 mb-2 font-semibold text-sm">
+        <p className="font-bold text-base  truncate">{title}</p>
+        <p className="text-blue-500 mb-2 font-semibold text-sm ">
           <span className="line-through">N</span>
           {Math.floor(price).toLocaleString()}/year
         </p>
@@ -41,18 +41,18 @@ const RecommendCard = ({
         <div className="flex gap-4 text-xs">
           <div className="flex gap-1 items-center">
             <BedIcon className="w-4 h-4" />
-            <p className="whitespace-nowrap">{bedrooms} Bedrooms</p>
+            <p className="whitespace-nowrap ">{bedrooms} Bedrooms</p>
           </div>
 
           <div className="flex gap-1 items-center">
             <ToiletIcon className="w-4 h-4" />
-            <p className="whitespace-nowrap">{bathrooms} Toilets</p>
+            <p className="whitespace-nowrap ">{bathrooms} Toilets</p>
           </div>
         </div>
 
         <div className="flex items-center gap-1 text-gray-500 text-xs">
           <MapPin className="w-4 h-4" />
-          <p className="truncate">
+          <p className="truncate ">
             {street}, {city}, {state}
           </p>
         </div>

@@ -14,6 +14,8 @@ interface CustomPropertyRequest extends Request {
     street: string;
     city: string;
     state: string;
+    longitude: number;
+    latitude: number;
   };
 
   user?: {
@@ -36,6 +38,8 @@ const addProperty = async (req: CustomPropertyRequest, res: Response) => {
     street,
     city,
     state,
+    longitude,
+    latitude,
   } = req.body;
 
   const images = req.files as Express.Multer.File[];
@@ -64,7 +68,9 @@ const addProperty = async (req: CustomPropertyRequest, res: Response) => {
     !bathrooms ||
     !street ||
     !city ||
-    !state
+    !state ||
+    !longitude ||
+    !latitude
   ) {
     return res
       .status(400)
@@ -95,6 +101,8 @@ const addProperty = async (req: CustomPropertyRequest, res: Response) => {
       city,
       state,
       images: JSON.stringify(imageURLS?.urls),
+      longitude,
+      latitude,
     };
 
     const [addedProperty] = await db("properties")

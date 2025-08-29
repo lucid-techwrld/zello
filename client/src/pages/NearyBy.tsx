@@ -20,7 +20,7 @@ const NearyBy = () => {
             <Loader className="w-7 h-7 text-blue-500 animate-spin" />
           </div>
         )}
-        <div className="w-full h-full grid grid-cols-2 gap-4 mt-3">
+        <div className="w-full h-full grid grid-cols-2 md:grid-cols-3 gap-4 mt-3">
           {properties?.map((prop, i) => (
             <PropertyCard key={i} {...prop} />
           ))}

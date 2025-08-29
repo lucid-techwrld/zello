@@ -46,7 +46,7 @@ const Properties = () => {
             <Loader className="w-7 h-7 text-blue-500 animate-spin" />
           </div>
         )}
-        <div className="grid grid-cols-2 gap-2 mt-2">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 mt-2">
           {properties?.map((property, idx) => (
             <PropertyCard key={idx} {...property} />
           ))}

@@ -9,7 +9,8 @@
     "migrate:prod": "cd database && knex migrate:latest --env production --knexfile ./knexfile.ts --migrations-directory ./migrations",
     "migrate:dev": "cd database && knex migrate:latest --env development --knexfile ./knexfile.ts --migrations-directory ./migrations",
     "migrate:rollback": "cd database && knex migrate:rollback --knexfile ./knexfile.ts --migrations-directory ./migrations",
-    "build": "tsc"
+    "build": "tsc",
+    "geocode": "ts-node scripts/geocode.ts"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +20,7 @@
     "@faker-js/faker": "^9.9.0",
     "@types/cors": "^2.8.19",
     "@types/node": "^24.0.7",
+    "axios": "^1.11.0",
     "bcryptjs": "^3.0.2",
     "cloudinary": "^2.7.0",
     "cookie-parser": "^1.4.7",

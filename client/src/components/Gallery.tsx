@@ -3,7 +3,7 @@ type GalleryProps = {
 };
 const Gallery = ({ images }: GalleryProps) => {
   return (
-    <div className="w-full h-full p-3">
+    <div className="w-full h-auto p-3">
       <h1 className="text-xl font-bold ">Gallery</h1>
       {images.length > 0 ? (
         <div className="mt-2 flex gap-2 overflow-x-auto  w-full h-30">

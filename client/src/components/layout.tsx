@@ -10,15 +10,19 @@ const Layout = () => {
   const handleMenu = () => {
     setIsMenuOpen((prevState) => !prevState);
   };
-  return (
-    <div className="w-full h-full bg-white ">
-      <NavBar isMenuOpen={isMenuOpen} handleMenu={handleMenu} />
-      <Header handleMenu={handleMenu} />
 
-      <main className="mt-16">
-        <Outlet />
-      </main>
-      <Footer />
+  return (
+    <div className="grid grid-cols-12 min-h-screen">
+      <NavBar isMenuOpen={isMenuOpen} handleMenu={handleMenu} />
+
+      {/* Main content */}
+      <div className="col-span-12 md:col-span-9 ">
+        <Header handleMenu={handleMenu} />
+        <main className="mt-20">
+          <Outlet />
+        </main>
+        <Footer />
+      </div>
     </div>
   );
 };

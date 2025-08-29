@@ -36,7 +36,7 @@ const BookmarkPage = () => {
         </div>
       )}
       {bookmarkedProperties?.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
           {bookmarkedProperties.map((property, index) => (
             <PropertyCard
               key={index}

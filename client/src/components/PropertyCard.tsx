@@ -19,6 +19,8 @@ export type PropertyType = {
   first_name?: string;
   last_name?: string;
   user_id?: string;
+  longitude?: number;
+  latitude?: number;
 };
 
 const PropertyCard = ({
