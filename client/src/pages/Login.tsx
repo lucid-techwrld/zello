@@ -72,7 +72,7 @@ const Login = () => {
             <img
               src={logo}
               alt="Zello Logo"
-              className="w-28 h-28 object-contain"
+              className="w-44 h-16 object-contain"
             />
           </div>
 

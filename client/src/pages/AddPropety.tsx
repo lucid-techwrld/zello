@@ -3,12 +3,35 @@ import extractAxiosErrorMessage from "../components/extractError";
 import { Loader } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import usePropertyStore from "../hooks/usePropertyStore";
+import { generateDescription } from "../utils/openRouter";
 
 export default function ListProperty() {
   const [images, setImages] = useState<File[] | null>([]);
   const addProperty = usePropertyStore((state) => state.addProperty);
   const loading = usePropertyStore((state) => state.loading.addProperty);
+  const [generatedDesc, setGeneratedDesc] = useState<string>("");
+  const [propertyData, setPropertyData] = useState({
+    title: "",
+    bathrooms: "",
+    bedrooms: "",
+    price: "",
+    type: "",
+  });
   const navigate = useNavigate();
+
+  const handleGenerateDesc = async () => {
+    console.log("running....");
+    const { title, type, bathrooms, bedrooms, price } = propertyData;
+    const result = await generateDescription(
+      title,
+      bathrooms,
+      bedrooms,
+      price,
+      type
+    );
+    console.log(result);
+    if (result) setGeneratedDesc(result);
+  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -26,8 +49,6 @@ export default function ListProperty() {
         formData.append("images", img);
       });
     }
-
-    //console.log(formData);
 
     try {
       const success = await addProperty(formData);
@@ -59,6 +80,10 @@ export default function ListProperty() {
           </label>
           <input
             name="title"
+            value={propertyData.title}
+            onChange={(e) =>
+              setPropertyData((prev) => ({ ...prev, title: e.target.value }))
+            }
             type="text"
             placeholder="e.g. Cozy Apartment in Lekki"
             className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
@@ -72,6 +97,10 @@ export default function ListProperty() {
           </label>
           <select
             name="type"
+            value={propertyData.type}
+            onChange={(e) =>
+              setPropertyData((prev) => ({ ...prev, type: e.target.value }))
+            }
             className="w-full px-4 py-2 border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           >
@@ -106,6 +135,10 @@ export default function ListProperty() {
           <input
             name="price"
             type="number"
+            value={propertyData.price}
+            onChange={(e) =>
+              setPropertyData((prev) => ({ ...prev, price: e.target.value }))
+            }
             placeholder="e.g. 150000"
             className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             required
@@ -118,6 +151,10 @@ export default function ListProperty() {
           </label>
           <input
             name="bedrooms"
+            value={propertyData.bedrooms}
+            onChange={(e) =>
+              setPropertyData((prev) => ({ ...prev, bedrooms: e.target.value }))
+            }
             type="number"
             className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           />
@@ -129,6 +166,13 @@ export default function ListProperty() {
           </label>
           <input
             name="bathrooms"
+            value={propertyData.bathrooms}
+            onChange={(e) =>
+              setPropertyData((prev) => ({
+                ...prev,
+                bathrooms: e.target.value,
+              }))
+            }
             type="number"
             className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           />
@@ -142,11 +186,18 @@ export default function ListProperty() {
         </label>
         <textarea
           name="description"
+          id="description"
+          value={generatedDesc}
           rows={4}
           placeholder="Describe your property..."
           className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white max-h-52 min-h-44"
         />
-        <button title="Generate a description with AI" className="generateai">
+        <button
+          type="button"
+          title="Generate a description with AI"
+          className="generateai"
+          onClick={handleGenerateDesc}
+        >
           <span>✨ Generate</span>
         </button>
       </div>

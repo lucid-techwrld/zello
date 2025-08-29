@@ -70,7 +70,7 @@ const Signup = () => {
           className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 space-y-6"
         >
           <div className="w-full flex justify-center">
-            <img src={logo} alt="zello logo" className="w-44 h-20" />
+            <img src={logo} alt="zello logo" className="w-44 h-16" />
           </div>
 
           <h1 className="text-center text-3xl font-bold mt-4 text-black">
