@@ -20,8 +20,9 @@ export default function ListProperty() {
   const navigate = useNavigate();
 
   const handleGenerateDesc = async () => {
-    console.log("running....");
+    //console.log("running....");
     const { title, type, bathrooms, bedrooms, price } = propertyData;
+    if (!(title || type || bathrooms || bedrooms || price)) return;
     const result = await generateDescription(
       title,
       bathrooms,
@@ -187,7 +188,7 @@ export default function ListProperty() {
         <textarea
           name="description"
           id="description"
-          value={generatedDesc}
+          defaultValue={generatedDesc}
           rows={4}
           placeholder="Describe your property..."
           className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white max-h-52 min-h-44"
