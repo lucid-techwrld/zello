@@ -6,6 +6,7 @@ import authRoute from "./routes/auth_route";
 import verifyRoute from "./routes/verification_routes";
 import propertyRoute from "./routes/property_route";
 import userRouter from "./routes/user_route";
+import aiROute from "./routes/openrouter";
 import cors, { CorsOptions } from "cors";
 import cookieParser from "cookie-parser";
 import streamRoute from "./routes/stream_route";
@@ -18,7 +19,6 @@ const whiteList = [
   "http://localhost:5173",
   "http://localhost:5000",
   "https://zello-home.onrender.com",
-  "https://zello-property.onrender.com",
 ];
 const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
@@ -43,6 +43,7 @@ app.use("/verify", verifyRoute);
 app.use("/property", propertyRoute);
 app.use("/user", userRouter);
 app.use("/stream", streamRoute);
+app.use("/ai", aiROute);
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(frontendPath, "index.html"));
